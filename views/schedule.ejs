@@ -41,11 +41,10 @@
 <body>
   <form method="POST" action="/schedule">
     <h1>Schedule an Appointment</h1>
-    <label for="email">Email</label>
+    <p>Please fill in this form to schedule an appointment.</p>
 
-    <input type="text" id="email" name="email" value='<%= user.email %>' required>
-
-
+    
+    <input type="text" id="email" name="email" value="<%= user.email %>" readonly>
     <label for="date">Date:</label>
     <input type="date" id="date" name="date" required>
     
@@ -55,11 +54,13 @@
     <label for="phone">Phone:</label>
     <input type="text" id="phone" name="phone" required>
 
+   
+
     <label for="serviceType">Service Type</label>
     <select id="serviceType" name="serviceType" required>
-      <option value="software development">Software Development Consultation</option>
-      <option value="network installation">Network Installation</option>
-      <option value="troubleshooting">Troubleshooting</option>
+      <option value="Software Development Consultation">Software Development Consultation</option>
+      <option value="Network Installation">Network Installation</option>
+      <option value="Troubleshooting">Troubleshooting</option>
 <br>
     <label for="description">Description:</label>
     <textarea id="description" name="description" rows="4" required></textarea>

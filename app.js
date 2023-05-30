@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
 const cookieParser = require('cookie-parser');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
+const Appointment = require('./models/Appointment');
 const bodyParser = require('body-parser');
 const app = express();
 
@@ -27,6 +28,7 @@ app.get('*', checkUser);
 app.get('/', (req, res) => res.render('home'));
 app.get('/smoothies', requireAuth, (req, res) => res.render('smoothies'));
 app.get('/schedule', (req, res) => res.render('schedule'));
-app.get('/appoinments', requireAuth, (req, res) => res.render('appointments'));
+// app.get('/appointments',requireAuth, (req, res) => res.render('appointments'));
 
 app.use(authRoutes);
+

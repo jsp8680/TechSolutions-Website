@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 const { isEmail, isDate, isMobilePhone } = require("validator");
 
 const appointmentSchema = new mongoose.Schema({
-  email: {
+    email: {
     type: String,
     required: [true, "Please enter an email"],
-    lowercase: true,
-  },
+    validate: [isEmail, "Please enter a valid email"],
+    },
   date: {
     type: Date,
     required: [true, "Please enter a date"],

@@ -12,7 +12,8 @@ router.get('/schedule', Controller.schedule_get);
 router.post('/schedule', Controller.schedule_post);
 router.get('/contact', Controller.contact_get);
 router.get('/about', Controller.about_get);
-router.get('/appointments', Controller.appointments_get);
+router.get('/appointments', Controller.appointment_get);
+
 
 
 module.exports = router;

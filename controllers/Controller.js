@@ -62,7 +62,7 @@ module.exports.signup_post = async (req, res) => {
     const user = await User.create({firstname,lastname, email, password });
     const token = createToken(user._id);
     res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(201).json({ user: user._id });
+    res.status(201).json({ user: user._id, email: user.email });
   }
   catch(err) {
     const errors = handleErrors(err);
@@ -78,7 +78,7 @@ module.exports.login_post = async (req, res) => {
     const user = await User.login(email, password);
     const token = createToken(user._id);
     res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(200).json({ user: user._id });
+    res.status(200).json({ user: user._id, email: user.email });
   } 
   catch (err) {
     const errors = handleErrors(err);
@@ -105,31 +105,61 @@ module.exports.schedule_get = (req, res) => {
 }
 
 module.exports.about_get = (req, res) => {
+  
+   // Check if the user property exists
+console.log(res.locals.user.email); // Check if the email property exists
   res.render('about');
 }
 
-module.exports.appointments_get = (req, res) => {
-  const results = {
-    appointments: [
-      {
-        email: "discord8680@gmail.com",
-        date: "2021-04-30",
-        time: "10:00",
-        phone: "1234567890",
-        serviceType: "Computer Repair",
-        description: "My computer is broken",
-        status: "Scheduled"
-      },
-    ]
-  };
-  res.render('appointments', { results });
 
-}
-
-  module.exports.appointments_get = (req, res) => {
+  module.exports.appointment_get = (req, res) => {
+    const userEmail = res.locals.user.email; // Assuming you have user authentication and the email is available in res.locals.user.email
+    console.log(res.locals.user.email); // Check if the email property exists
+    Appointment.find({ email: userEmail })
+      .then(appointments => {
+        // Convert the time to AM/PM format
+        appointments.forEach(appointment => {
+          const [hour, minute] = appointment.time.split(":");
+          const date = new Date();
+          date.setHours(hour, minute);
+          appointment.time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        });
   
-   
+        res.render('appointments', { appointments }); // Pass appointments as a local variable to the template
+      })
+      .catch(err => {
+        console.log(err);
+        res.render('error'); // Render an error page or handle the error appropriately
+      });
   }
+  
+
+
+
+  
+
+
+// module.exports.appointments_get = (req, res) => {
+//   const userEmail = req.user.email; // Assuming you have user authentication and the email is available in req.user.email
+
+//   Appointment.find({ email: userEmail })
+//     .then(appointments => {
+//       // Convert the time to AM/PM format
+//       appointments.forEach(appointment => {
+//         const [hour, minute] = appointment.time.split(":");
+//         const date = new Date();
+//         date.setHours(hour, minute);
+//         appointment.time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+//       });
+
+//       res.render('appointments', { appointments });
+//     })
+//     .catch(err => {
+//       console.log(err);
+//       res.render('error'); // Render an error page or handle the error appropriately
+//     });
+// }
+
 
 
 module.exports.schedule_post = (req, res) => {
