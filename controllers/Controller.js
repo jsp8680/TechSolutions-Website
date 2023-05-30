@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Appointment = require("../models/Appointment");
 const jwt = require('jsonwebtoken');
 const MongoClient = require('mongodb').MongoClient;
 const url = "mongodb+srv://censedpower8:coco1234@cluster1.hupl8dz.mongodb.net/";
@@ -61,7 +62,7 @@ module.exports.signup_post = async (req, res) => {
     const user = await User.create({firstname,lastname, email, password });
     const token = createToken(user._id);
     res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(201).json({ user: user._id });
+    res.status(201).json({ user: user._id, email: user.email });
   }
   catch(err) {
     const errors = handleErrors(err);
@@ -77,7 +78,7 @@ module.exports.login_post = async (req, res) => {
     const user = await User.login(email, password);
     const token = createToken(user._id);
     res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(200).json({ user: user._id });
+    res.status(200).json({ user: user._id, email: user.email });
   } 
   catch (err) {
     const errors = handleErrors(err);
@@ -104,95 +105,88 @@ module.exports.schedule_get = (req, res) => {
 }
 
 module.exports.about_get = (req, res) => {
+  
+   // Check if the user property exists
+console.log(res.locals.user.email); // Check if the email property exists
   res.render('about');
 }
 
-// module.exports.appointments_get = (req, res) => {
-//   const results = {
-//     appointments: [
-//       {
-//         email: "discord8680@gmail.com",
-//         date: "2021-04-30",
-//         time: "10:00",
-//         phone: "1234567890",
-//         serviceType: "Computer Repair",
-//         description: "My computer is broken"
-//       },
-//     ]
-//   };
-//   res.render('appointments', { result: results });
 
+  module.exports.appointment_get = (req, res) => {
+    const userEmail = res.locals.user.email; // Assuming you have user authentication and the email is available in res.locals.user.email
+    console.log(res.locals.user.email); // Check if the email property exists
+    Appointment.find({ email: userEmail })
+      .then(appointments => {
+        // Convert the time to AM/PM format
+        appointments.forEach(appointment => {
+          const [hour, minute] = appointment.time.split(":");
+          const date = new Date();
+          date.setHours(hour, minute);
+          appointment.time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        });
+  
+        res.render('appointments', { appointments }); // Pass appointments as a local variable to the template
+      })
+      .catch(err => {
+        console.log(err);
+        res.render('error'); // Render an error page or handle the error appropriately
+      });
+  }
+  
+
+
+
+  
+
+
+// module.exports.appointments_get = (req, res) => {
+//   const userEmail = req.user.email; // Assuming you have user authentication and the email is available in req.user.email
+
+//   Appointment.find({ email: userEmail })
+//     .then(appointments => {
+//       // Convert the time to AM/PM format
+//       appointments.forEach(appointment => {
+//         const [hour, minute] = appointment.time.split(":");
+//         const date = new Date();
+//         date.setHours(hour, minute);
+//         appointment.time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+//       });
+
+//       res.render('appointments', { appointments });
+//     })
+//     .catch(err => {
+//       console.log(err);
+//       res.render('error'); // Render an error page or handle the error appropriately
+//     });
 // }
 
-//   module.exports.appointments_get = (req, res) => {
-
-//     const client = new MongoClient(url, {
-//       useNewUrlParser: true,
-//       useUnifiedTopology: true,
-//     });
-
-//     try {
-//       // Connect to the MongoDB server
-//       client.connect(function(err, db) {
-//         if (err) throw err;
-//         var dbo = db.db("schedule");
-//         dbo.collection("appointments").find({}).toArray(function(err, result) {
-//           if (err) throw err;
-
-// // Convert the time to AM/PM format
-// result.forEach(appointment => {
-//   const [hour, minute] = appointment.time.split(":");
-//   const date = new Date();
-//   date.setHours(hour, minute);
-//   appointment.time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-// });
-
-//           console.log(result);
-//           res.render('appointments', {result});
-//           db.close();
-//         });
-//       });
-//     } catch (error) {
-//       console.error("Error occurred while inserting data:", error);
-//       throw error;
-//     } finally {
-//       // Close the client connection
-//       client.close();
-//     }
-//   }
 
 
-module.exports.schedule_post = async (req, res) => {
-  const email = req.body.email;
-  const date = req.body.date;
-   const time = req.body.time;
-   const phone = req.body.phone;
-   const serviceType = req.body.serviceType;
-   const description = req.body.description;
-   const status = 'Scheduled';
+module.exports.schedule_post = (req, res) => {
+  const { email, date, time, phone, serviceType, description } = req.body;
 
-   console.log(req.body.email, date, time, phone, serviceType, description);
+  // Create a new appointment instance
+  const newAppointment = new Appointment({
+    email,
+    date,
+    time,
+    phone,
+    serviceType,
+    description,
+    status: 'Scheduled', // Set initial status as 'Scheduled'
+  });
 
-   
-   const dataToInsert = {
-     email: email,
-     date: date,
-     time: time,
-     phone: phone,
-     serviceType: serviceType,
-     description: description,
-     status: status
-   };
-    
-
-   insertData(dataToInsert, 'schedule','appointments')
-   .catch(error => {
-     console.error('An error occurred:', error);
-   }
-   );
-     sendEmail(req.body.email, req.body.date, req.body.time);
-   res.redirect('/');
-  
+  // Save the new appointment to the database
+  newAppointment.save()
+    .then(savedAppointment => {
+      console.log('Appointment saved successfully!');
+      sendEmail(email, date, time);
+      res.redirect('/'); // Redirect to appointments page after successful scheduling
+    })
+    .catch(err => {
+      console.log(err);
+      res.redirect('/schedule'); // Redirect to schedule page with an error message
+    });
 };
 
 

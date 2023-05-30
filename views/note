@@ -1,0 +1,10 @@
+ <% results.appointments.forEach(function(appointment) { %>
+    <li>
+      <strong>Email:</strong> <%= appointment.email %><br>
+      <strong>Date:</strong> <%= appointment.date %><br>
+      <strong>Time:</strong> <%= appointment.time %><br>
+      <strong>Phone:</strong> <%= appointment.phone %><br>
+      <strong>Service Type:</strong> <%= appointment.serviceType %><br>
+      <strong>Description:</strong> <%= appointment.description %><br>
+    </li>
+  <% }); %>

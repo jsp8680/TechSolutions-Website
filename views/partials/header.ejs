@@ -4,6 +4,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* Styles for the Profile Icon */
+.profile-icon {
+  cursor: pointer;
+  /* make it smaller */
+  width: 50px;
+  height: 50px;
+  /* make it circular */
+  border-radius: 50%;
+  /* add a border around it */
+  /* border: 5px solid black; */
+  /* center the image */
+  display: flex;
+  justify-content: center;
+}
+/* Styles for the Navigation Bar */
+
+.navbar {
+  /* hide the navbar by default */
+  display: none;
+  /* stack the items vertically */
+  flex-direction: row;
+  /* center the text in the navbar */
+  align-items: center;
+  /* add some padding around the text */
+  padding: 20px;
+  /* add a border around the navbar */
+  border: 5px solid black;
+
+
+}
+
+  </style>
 </head>
 <body>
   <nav>
@@ -15,7 +48,20 @@
         <li><a href='/schedule'>Book an Appointment</a></li>
         <li><a href='/about'>About Us</a></li>
         <li><a href='/contact'>Contact Us</a></li>
-        <li><a href="/logout">Log Out</a></li>
+        <!-- Profile Icon -->
+<div class="profile-icon" onclick="toggleNavbar()">
+  <img src="profile-icon.jpg" alt="Profile Icon">
+</div>
+
+<!-- Navigation Bar -->
+<div class="navbar" id="navbar">
+  <ul>
+    <li><a href="/logout">Log Out</a></li> <br>
+    <li><a href="/profile">Profile</a></li> <br>
+    <li><a href="/appointments">Appointments</a></li> <br>
+  </ul>
+</div>
+
       <% } else { %>
         <li><a href='/'>Home</a></li>
         <li><a href='/about'>About Us</a></li>
@@ -26,3 +72,14 @@
     </ul>
   </nav>
   
+  <script>
+    function toggleNavbar() {
+  var navbar = document.getElementById("navbar");
+  if (navbar.style.display === "none") {
+    navbar.style.display = "flex";
+  } else {
+    navbar.style.display = "none";
+  }
+}
+
+  </script>
