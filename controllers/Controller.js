@@ -107,22 +107,23 @@ module.exports.about_get = (req, res) => {
   res.render('about');
 }
 
-// module.exports.appointments_get = (req, res) => {
-//   const results = {
-//     appointments: [
-//       {
-//         email: "discord8680@gmail.com",
-//         date: "2021-04-30",
-//         time: "10:00",
-//         phone: "1234567890",
-//         serviceType: "Computer Repair",
-//         description: "My computer is broken"
-//       },
-//     ]
-//   };
-//   res.render('appointments', { result: results });
+module.exports.appointments_get = (req, res) => {
+  const results = {
+    appointments: [
+      {
+        email: "discord8680@gmail.com",
+        date: "2021-04-30",
+        time: "10:00",
+        phone: "1234567890",
+        serviceType: "Computer Repair",
+        description: "My computer is broken",
+        status: "Scheduled"
+      },
+    ]
+  };
+  res.render('appointments', { results });
 
-// }
+}
 
 //   module.exports.appointments_get = (req, res) => {
 

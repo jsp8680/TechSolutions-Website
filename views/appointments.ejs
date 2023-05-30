@@ -6,17 +6,11 @@
 <body>
   <%- include('partials/header') %>
   <h1>Appointments</h1>
-  <ul>
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Appointments</title>
-    </head>
-    <body>
-      <%- include('partials/header') %>
-      <h1>Appointments</h1>
+
+    
+      
       <ul>
-        <% results.forEach(function(appointment) { %>
+        <% results.appointments.forEach(function(appointment) { %>
           <li>
             <strong>Email:</strong> <%= appointment.email %><br>
             <strong>Date:</strong> <%= appointment.date %><br>
@@ -30,7 +24,4 @@
     </body>
     </html>
     
-  </ul>
-  
-</body>
-</html>
+
