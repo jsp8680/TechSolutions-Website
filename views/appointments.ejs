@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Appointments</title>
+</head>
+<body>
+  <%- include('partials/header') %>
+  <h1>Appointments</h1>
+  
+  <ul>
+    <% result.forEach(function(appointment) { %>
+      <li><%= appointment.date%> <%= appointment.time %> <%= appointment.serviceType %></li>
+    <% }); %>
+  </ul>
+</body>
+</html>
