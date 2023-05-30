@@ -6,7 +6,7 @@ const url = "mongodb+srv://censedpower8:coco1234@cluster1.hupl8dz.mongodb.net/";
 // handle errors
 const handleErrors = (err) => {
   console.log(err.message, err.code);
-  let errors = { email: '', password: '' };
+  let errors = { firstname: '', lastname: '', email: '', password: '' };
 
   // incorrect email
   if (err.message === 'incorrect email') {
@@ -55,10 +55,10 @@ module.exports.login_get = (req, res) => {
 }
 
 module.exports.signup_post = async (req, res) => {
-  const { email, password } = req.body;
+  const { firstname, lastname, email, password } = req.body;
 
   try {
-    const user = await User.create({ email, password });
+    const user = await User.create({firstname,lastname, email, password });
     const token = createToken(user._id);
     res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
     res.status(201).json({ user: user._id });
@@ -169,6 +169,7 @@ module.exports.schedule_post = async (req, res) => {
    const phone = req.body.phone;
    const serviceType = req.body.serviceType;
    const description = req.body.description;
+   const status = 'Scheduled';
 
    console.log(req.body.email, date, time, phone, serviceType, description);
 
@@ -179,7 +180,8 @@ module.exports.schedule_post = async (req, res) => {
      time: time,
      phone: phone,
      serviceType: serviceType,
-     description: description
+     description: description,
+     status: status
    };
     
 
@@ -188,7 +190,7 @@ module.exports.schedule_post = async (req, res) => {
      console.error('An error occurred:', error);
    }
    );
-    // sendEmail(req.body.email, req.body.date, req.body.time);
+     sendEmail(req.body.email, req.body.date, req.body.time);
    res.redirect('/');
   
 };
