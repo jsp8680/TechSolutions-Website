@@ -125,42 +125,10 @@ module.exports.appointments_get = (req, res) => {
 
 }
 
-//   module.exports.appointments_get = (req, res) => {
+  module.exports.appointments_get = (req, res) => {
 
-//     const client = new MongoClient(url, {
-//       useNewUrlParser: true,
-//       useUnifiedTopology: true,
-//     });
-
-//     try {
-//       // Connect to the MongoDB server
-//       client.connect(function(err, db) {
-//         if (err) throw err;
-//         var dbo = db.db("schedule");
-//         dbo.collection("appointments").find({}).toArray(function(err, result) {
-//           if (err) throw err;
-
-// // Convert the time to AM/PM format
-// result.forEach(appointment => {
-//   const [hour, minute] = appointment.time.split(":");
-//   const date = new Date();
-//   date.setHours(hour, minute);
-//   appointment.time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-// });
-
-//           console.log(result);
-//           res.render('appointments', {result});
-//           db.close();
-//         });
-//       });
-//     } catch (error) {
-//       console.error("Error occurred while inserting data:", error);
-//       throw error;
-//     } finally {
-//       // Close the client connection
-//       client.close();
-//     }
-//   }
+   
+  }
 
 
 module.exports.schedule_post = async (req, res) => {

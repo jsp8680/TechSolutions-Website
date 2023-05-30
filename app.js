@@ -27,5 +27,6 @@ app.get('*', checkUser);
 app.get('/', (req, res) => res.render('home'));
 app.get('/smoothies', requireAuth, (req, res) => res.render('smoothies'));
 app.get('/schedule', (req, res) => res.render('schedule'));
+app.get('/appoinments', requireAuth, (req, res) => res.render('appointments'));
 
 app.use(authRoutes);

@@ -42,7 +42,9 @@
   <form method="POST" action="/schedule">
     <h1>Schedule an Appointment</h1>
     <label for="email">Email</label>
-    <input type="text" id="email" name="email" required>
+
+    <input type="text" id="email" name="email" value='<%= user.email %>' required>
+
 
     <label for="date">Date:</label>
     <input type="date" id="date" name="date" required>
