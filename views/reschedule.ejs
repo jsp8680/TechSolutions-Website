@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+<h1>Reschedule Appointment</h1>
+
+<form action="/appointments/<%= appointment._id %>/reschedule" method="POST">
+  <div>
+    <label for="date">New Date:</label>
+    <input type="date" id="date" name="date" required>
+  </div>
+  <div>
+    <label for="time">New Time:</label>
+    <input type="time" id="time" name="time" required>
+  </div>
+  <button type="submit">Reschedule</button>
+</form>
+
+<%- include('partials/footer') %>

@@ -112,10 +112,64 @@ console.log(res.locals.user.email); // Check if the email property exists
 }
 
 
+module.exports.cancelAppointment = (req, res) => {
+  const appointmentId = req.params.id;
+
+  // Update the appointment status to "canceled" in the database
+  Appointment.findByIdAndDelete(appointmentId, { status: 'Canceled' })
+    .then(() => {
+      res.redirect('/appointments');
+    })
+    .catch(err => {
+      console.log(err);
+      res.render('error'); // Render an error page or handle the error appropriately
+    });
+};
+
+module.exports.rescheduleAppointment_get = (req, res) => {
+  const appointmentId = req.params.id;
+
+  // Implement the logic to reschedule the appointment
+  Appointment.findById(appointmentId)
+    .then(appointment => {
+      if (!appointment) {
+        // Handle case where appointment is not found
+        res.render('error', { message: 'Appointment not found' });
+      } else {
+        // Render the reschedule form with the appointment data
+        res.render('reschedule', { appointment });
+      }
+    })
+    .catch(err => {
+      // Handle error while fetching the appointment
+      console.log(err);
+      res.render('error', { message: 'Error fetching appointment' });
+    });
+};
+
+// Handle the form submission for rescheduling
+module.exports.rescheduleAppointment_post = (req, res) => {
+  const appointmentId = req.params.id;
+  const { date, time } = req.body;
+
+  // Update the existing appointment with the new date and time
+  Appointment.findByIdAndUpdate(appointmentId, { date, time })
+    .then(() => {
+      // Redirect to the appointments page after successful rescheduling
+      res.redirect('/appointments');
+    })
+    .catch(err => {
+      // Handle error while updating the appointment
+      console.log(err);
+      res.render('error', { message: 'Error rescheduling appointment' });
+    });
+};
+
+
   module.exports.appointment_get = (req, res) => {
     const userEmail = res.locals.user.email; // Assuming you have user authentication and the email is available in res.locals.user.email
     console.log(res.locals.user.email); // Check if the email property exists
-    Appointment.find({ email: userEmail })
+    Appointment.find({ email: userEmail, status: 'Scheduled' })
       .then(appointments => {
         // Convert the time to AM/PM format
         appointments.forEach(appointment => {

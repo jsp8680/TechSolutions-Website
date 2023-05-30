@@ -6,7 +6,7 @@ const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 const Appointment = require('./models/Appointment');
 const bodyParser = require('body-parser');
 const app = express();
-
+mongoose.set('useFindAndModify', false);
 // middleware
 app.use(express.static('public'));
 app.use(express.json());
