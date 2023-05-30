@@ -10,6 +10,7 @@ router.post('/login', Controller.login_post);
 router.get('/logout', Controller.logout_get);
 router.get('/schedule', Controller.schedule_get);
 router.post('/schedule', Controller.schedule_post);
+// router.get('/appointments', Controller.appointments_get);
 
 
 module.exports = router;

@@ -6,11 +6,31 @@
 <body>
   <%- include('partials/header') %>
   <h1>Appointments</h1>
-  
   <ul>
-    <% result.forEach(function(appointment) { %>
-      <li><%= appointment.date%> <%= appointment.time %> <%= appointment.serviceType %></li>
-    <% }); %>
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Appointments</title>
+    </head>
+    <body>
+      <%- include('partials/header') %>
+      <h1>Appointments</h1>
+      <ul>
+        <% results.forEach(function(appointment) { %>
+          <li>
+            <strong>Email:</strong> <%= appointment.email %><br>
+            <strong>Date:</strong> <%= appointment.date %><br>
+            <strong>Time:</strong> <%= appointment.time %><br>
+            <strong>Phone:</strong> <%= appointment.phone %><br>
+            <strong>Service Type:</strong> <%= appointment.serviceType %><br>
+            <strong>Description:</strong> <%= appointment.description %><br>
+          </li>
+        <% }); %>
+      </ul>
+    </body>
+    </html>
+    
   </ul>
+  
 </body>
 </html>
