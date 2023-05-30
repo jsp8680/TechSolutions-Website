@@ -91,6 +91,14 @@ module.exports.logout_get = (req, res) => {
   res.redirect('/');
 }
 
+module.exports.contact_get = (req, res) => {
+  res.render('contact');
+}
+
+module.exports.about_get = (req, res) => {
+  res.render('about');
+}
+
 module.exports.schedule_get = (req, res) => {
   res.render('schedule');
 }
