@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Appointment = require("../models/Appointment");
 const jwt = require('jsonwebtoken');
 const MongoClient = require('mongodb').MongoClient;
 const url = "mongodb+srv://censedpower8:coco1234@cluster1.hupl8dz.mongodb.net/";
@@ -126,42 +127,36 @@ module.exports.appointments_get = (req, res) => {
 }
 
   module.exports.appointments_get = (req, res) => {
-
+  
    
   }
 
 
-module.exports.schedule_post = async (req, res) => {
-  const email = req.body.email;
-  const date = req.body.date;
-   const time = req.body.time;
-   const phone = req.body.phone;
-   const serviceType = req.body.serviceType;
-   const description = req.body.description;
-   const status = 'Scheduled';
+module.exports.schedule_post = (req, res) => {
+  const { email, date, time, phone, serviceType, description } = req.body;
 
-   console.log(req.body.email, date, time, phone, serviceType, description);
+  // Create a new appointment instance
+  const newAppointment = new Appointment({
+    email,
+    date,
+    time,
+    phone,
+    serviceType,
+    description,
+    status: 'Scheduled', // Set initial status as 'Scheduled'
+  });
 
-   
-   const dataToInsert = {
-     email: email,
-     date: date,
-     time: time,
-     phone: phone,
-     serviceType: serviceType,
-     description: description,
-     status: status
-   };
-    
-
-   insertData(dataToInsert, 'schedule','appointments')
-   .catch(error => {
-     console.error('An error occurred:', error);
-   }
-   );
-     sendEmail(req.body.email, req.body.date, req.body.time);
-   res.redirect('/');
-  
+  // Save the new appointment to the database
+  newAppointment.save()
+    .then(savedAppointment => {
+      console.log('Appointment saved successfully!');
+      sendEmail(email, date, time);
+      res.redirect('/'); // Redirect to appointments page after successful scheduling
+    })
+    .catch(err => {
+      console.log(err);
+      res.redirect('/schedule'); // Redirect to schedule page with an error message
+    });
 };
 
 

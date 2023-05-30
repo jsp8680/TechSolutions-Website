@@ -5,9 +5,7 @@ const appointmentSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, "Please enter an email"],
-    unique: true,
     lowercase: true,
-    validate: [isEmail, "Please enter a valid email"],
   },
   date: {
     type: Date,
@@ -35,6 +33,6 @@ const appointmentSchema = new mongoose.Schema({
     type: String,
   },
 });
-const Appointment = mongoose.model('appointment', appointmentSchema);
+const Appointment = mongoose.model('appointments', appointmentSchema);
 
 module.exports = Appointment;
