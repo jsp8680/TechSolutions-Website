@@ -14,6 +14,12 @@ const handleErrorsForAppointments = (err) => {
    if (err.message.includes('date must be in the future')) {
     errors.date = 'Date must be in the future';
   }
+
+//
+// Check if the provided date is on a weekend (Saturday or Sunday)
+if (err.message.includes('Appointments cannot be scheduled on weekends')) {
+  errors.date = 'Appointments cannot be scheduled on weekends';
+}
   // Check if description data is greater than a certain length
   if(err.message.includes('description must be less than 100 characters')){
 
@@ -139,6 +145,7 @@ module.exports.about_get = (req, res) => {
 }
 
 module.exports.schedule_get = (req, res) => {
+  
   res.render('schedule');
 }
 
@@ -264,6 +271,15 @@ module.exports.schedule_post = (req, res) => {
     res.status(400).json({ errors });
     return;
   }
+  // Check if the provided date is on a weekend (Saturday or Sunday)
+  const appointmentDate = new Date(date);
+  const dayOfWeek = appointmentDate.getDay();
+  console.log(dayOfWeek); 
+  if(dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6){
+    const errors = handleErrorsForAppointments({ message: 'Appointments cannot be scheduled on weekends' });
+    res.status(400).json({ errors });
+    return;
+  }
 
 //check if description data is greater than a certain length
 if (description.length > 100) {
@@ -294,8 +310,11 @@ if (description.length < 10) {
   newAppointment.save()
     .then(savedAppointment => {
       console.log('Appointment saved successfully!');
+      
       sendEmail(email, date, time);
-      res.redirect('/'); // Redirect to appointments page after successful scheduling
+       // Redirect to appointments page after successful scheduling
+      // Send the appointment data back in the response
+    res.status(200).json({ appointment: savedAppointment });
     })
     .catch(err => {
       const errors = handleErrorsForAppointments(err);

@@ -50,7 +50,7 @@
     <div class="date error"></div>
     
     <label for="time">Time:</label>
-    <input type="time"id="time" name="time" required>
+    <input type="time" id="time" name="time" required>
     <div class="time error"></div>
     
     <label for="phone">Phone:</label>
@@ -94,49 +94,48 @@
   const serviceTypeError = document.querySelector(".serviceType.error");
   const descriptionError = document.querySelector(".description.error");
 
+ 
   form.addEventListener('submit', async (e) =>{
-    e.preventDefault();
+  e.preventDefault();
 
-    //reset errors
-    dateError.textContent = "";
-    timeError.textContent = "";
-    phoneError.textContent = "";
-    serviceTypeError.textContent = "";
-    descriptionError.textContent = "";  
+  // Reset errors
+  dateError.textContent = "";
+  timeError.textContent = "";
+  phoneError.textContent = "";
+  serviceTypeError.textContent = "";
+  descriptionError.textContent = "";  
 
-    //get values
-    const email = form.email.value;
-    const date = form.date.value;
-    const time = form.time.value;
-    const phone = form.phone.value;
-    const serviceType = form.serviceType.value;
-    const description = form.description.value;
+  // Get values
+  const email = form.email.value;
+  const date = form.date.value;
+  const time = form.time.value;
+  const phone = form.phone.value;
+  const serviceType = form.serviceType.value;
+  const description = form.description.value;
 
-    try {
-      const res = await fetch('/schedule',{
-        method: "POST",
-        body: JSON.stringify({email, date, time, phone, serviceType, description}),
-        headers: {'Content-Type': 'application/json'}
+  try {
+    const res = await fetch('/schedule',{
+      method: "POST",
+      body: JSON.stringify({email, date, time, phone, serviceType, description}),
+      headers: {'Content-Type': 'application/json'}
+    });
 
-      });
-      const data = await res.json();
-      console.log(data);
-      if(data.errors){
-        dateError.textContent = data.errors.date;
-        timeError.textContent = data.errors.time;
-        phoneError.textContent = data.errors.phone;
-        serviceTypeError.textContent = data.errors.serviceType;
-        descriptionError.textContent = data.errors.description;
-      }
-      if(data.appointment){
-        location.assign("/");
-      }
-    } catch (err) {
-      console.log(err);
-
+    const data = await res.json();
+    console.log(data);
+    if (data.errors) {
+      dateError.textContent = data.errors.date;
+      timeError.textContent = data.errors.time;
+      phoneError.textContent = data.errors.phone;
+      serviceTypeError.textContent = data.errors.serviceType;
+      descriptionError.textContent = data.errors.description;
     }
+    if (data.appointment) { // Update the condition to check for data.appointment
+      location.assign("/");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
 
-
-  })
 </script>
 </html>
