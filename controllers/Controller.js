@@ -5,6 +5,41 @@ const MongoClient = require('mongodb').MongoClient;
 const url = "mongodb+srv://censedpower8:coco1234@cluster1.hupl8dz.mongodb.net/";
 
 // handle errors
+
+const handleErrorsForAppointments = (err) => {
+  console.log(err.message, err.code);
+  let errors = {date: '', time: '', phone: '', serviceType: '', description: '' };
+
+   // Check if date is in the future
+   if (err.message.includes('date must be in the future')) {
+    errors.date = 'Date must be in the future';
+  }
+  // Check if description data is greater than a certain length
+  if(err.message.includes('description must be less than 100 characters')){
+
+    errors.description = 'Description must be less than 100 characters';
+  }
+
+  // Check if description data is shorter than a certain length
+  if(err.message.includes('description must be more than 10 characters')){
+    errors.description = 'Description must be more than 10 characters';
+  }
+  // incorrect phone
+  if (err.message === 'incorrect phone') {
+    errors.phone = 'Invalid phone number';
+  }
+
+  
+  // validation errors
+  if (err.message.includes('appointments validation failed')) {
+    Object.values(err.errors).forEach(({ properties }) => {
+      errors[properties.path] = properties.message;
+    });
+  }
+  
+  return errors;
+};
+
 const handleErrors = (err) => {
   console.log(err.message, err.code);
   let errors = { firstname: '', lastname: '', email: '', password: '' };
@@ -36,7 +71,8 @@ const handleErrors = (err) => {
       errors[properties.path] = properties.message;
     });
   }
-
+  
+  
   return errors;
 }
 
@@ -221,6 +257,28 @@ module.exports.rescheduleAppointment_post = (req, res) => {
 module.exports.schedule_post = (req, res) => {
   const { email, date, time, phone, serviceType, description } = req.body;
 
+
+   // Check if the provided date is in the past
+   if (new Date(date) < new Date()) {
+    const errors = handleErrorsForAppointments({ message: 'date must be in the future' });
+    res.status(400).json({ errors });
+    return;
+  }
+
+//check if description data is greater than a certain length
+if (description.length > 100) {
+  const errors = handleErrorsForAppointments({ message: 'description must be less than 100 characters' });
+  res.status(400).json({ errors });
+  return;
+}
+//check if description data is shorter than a certain length
+if (description.length < 10) {
+  const errors = handleErrorsForAppointments({ message: 'description must be more than 10 characters' });
+  res.status(400).json({ errors });
+  return;
+}
+  
+
   // Create a new appointment instance
   const newAppointment = new Appointment({
     email,
@@ -240,41 +298,13 @@ module.exports.schedule_post = (req, res) => {
       res.redirect('/'); // Redirect to appointments page after successful scheduling
     })
     .catch(err => {
-      console.log(err);
-      res.redirect('/schedule'); // Redirect to schedule page with an error message
+      const errors = handleErrorsForAppointments(err);
+      res.status(400).json({ errors });// Redirect to schedule page with an error message
     });
 };
 
 
-async function insertData(data, dbName, collectionName) {
-  // Create a new MongoClient
-  const client = new MongoClient(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
 
-  try {
-    // Connect to the MongoDB server
-    await client.connect();
-
-    // Access the database
-    const db = client.db(dbName);
-
-    // Access the collection
-    const collection = db.collection(collectionName);
-
-    // Insert the data
-    await collection.insertOne(data);
-
-    console.log("Data inserted successfully!");
-  } catch (error) {
-    console.error("Error occurred while inserting data:", error);
-    throw error;
-  } finally {
-    // Close the client connection
-    await client.close();
-  }
-}
 
 const sgMail = require('@sendgrid/mail')
 const API_KEY = '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'
