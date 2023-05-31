@@ -24,6 +24,8 @@ nav{
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: 120px;
+  border: #000000;
+  
 }
 nav ul{
   display: flex;
@@ -42,12 +44,12 @@ nav li a{
 }
 .btn{
   border-radius: 36px;
-  background: #FEE996;
+  background: #6de7f0;
 }
 form h2{
   font-size: 2.4em;
   font-weight: 900;
-  margin-bottom: 40px;
+  margin-bottom: 5px;
 }
 form{
   width: 360px;
@@ -57,10 +59,23 @@ form{
   border-radius: 10px;
   background: white;
 }
+form input[type="text"]:hover,
+form input[type="password"]:hover{
+  border: 1px solid #3599f7;
+
+}
+form input[type="password"]:focus,
+form input[type="text"]:focus{
+  border: 1px solid #3599f7;
+  box-shadow: 0 0 5px #3599f7;
+}
+form input:focus{
+  border: 1px solid #3599f7;
+}
 input{
   padding: 10px 12px;
   border-radius: 4px;
-  border: 1px solid #ddd;
+  border: 1px solid #000000;
   font-size: 1em;
   width: 100%;
 }
@@ -68,10 +83,10 @@ label{
   display: block;
   margin: 20px 0 10px;
 }
-button{
+#submit-schedule {
   margin-top: 30px;
   border-radius: 36px;
-  background: #FEE996;
+  background: #4875f1;
   border:0;
   text-transform: uppercase;
   font-weight: 700;
@@ -79,9 +94,29 @@ button{
   display: block;
   padding: 10px 16px;
   letter-spacing: 2px;
+  color: white;
+  
+}
+
+button{
+  margin-top: 30px;
+  border-radius: 50px;
+  width: auto;
+  height: auto;
+  background: #4875f1;
+  border:0;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 1em;
+  display: block;
+  padding: 10px 16px;
+  letter-spacing: 2px;
+  color: rgb(0, 0, 0);
+  /* move button to center */
+  margin: 0 auto;
 }
 .error{
-  color: #ff0099;
+  color: #ff0000;
   margin: 10px 2px;
   font-size: 0.8em;
   font-weight: bold;
@@ -91,7 +126,7 @@ header{
   align-items: center;
 }
 header img{
-  width: 250px;
+  width: 500px;
   margin-right: 40px;
 }
 header h2{
@@ -102,7 +137,7 @@ header h3{
   font-size: 1.6em;
   margin-bottom: 10px;
   margin-left: 2px;
-  color: #999;
+  color: #3599f7;
 }
 header .btn{
   margin-top: 20px;
@@ -111,6 +146,7 @@ header .btn{
   font-weight: bold;
   display: inline-block;
   font-size: 0.8em;
+  color: #000000;
 }
 .recipes{
   display: grid;
@@ -135,5 +171,5 @@ header .btn{
 footer{
   text-align: center;
   margin-top: 120px;
-  color: #aaa;
+  color: #000000;
 }

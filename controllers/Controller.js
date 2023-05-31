@@ -20,6 +20,11 @@ const handleErrorsForAppointments = (err) => {
 if (err.message.includes('Appointments cannot be scheduled on weekends')) {
   errors.date = 'Appointments cannot be scheduled on weekends';
 }
+
+// Check if the time is between 9 AM and 4 PM
+if (err.message.includes('Appointments can only be scheduled between 9 AM and 4 PM')) {
+  errors.time = 'Appointments can only be scheduled between 9 AM and 4 PM';
+}
   // Check if description data is greater than a certain length
   if(err.message.includes('description must be less than 100 characters')){
 
@@ -143,7 +148,9 @@ module.exports.contact_get = (req, res) => {
 module.exports.about_get = (req, res) => {
   res.render('about');
 }
-
+module.exports.services_get = (req, res) => {
+  res.render('services');
+}
 module.exports.schedule_get = (req, res) => {
   
   res.render('schedule');
@@ -155,6 +162,7 @@ module.exports.about_get = (req, res) => {
 console.log(res.locals.user.email); // Check if the email property exists
   res.render('about');
 }
+
 
 
 module.exports.cancelAppointment = (req, res) => {
@@ -238,26 +246,7 @@ module.exports.rescheduleAppointment_post = (req, res) => {
   
 
 
-// module.exports.appointments_get = (req, res) => {
-//   const userEmail = req.user.email; // Assuming you have user authentication and the email is available in req.user.email
 
-//   Appointment.find({ email: userEmail })
-//     .then(appointments => {
-//       // Convert the time to AM/PM format
-//       appointments.forEach(appointment => {
-//         const [hour, minute] = appointment.time.split(":");
-//         const date = new Date();
-//         date.setHours(hour, minute);
-//         appointment.time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-//       });
-
-//       res.render('appointments', { appointments });
-//     })
-//     .catch(err => {
-//       console.log(err);
-//       res.render('error'); // Render an error page or handle the error appropriately
-//     });
-// }
 
 
 
@@ -280,7 +269,14 @@ module.exports.schedule_post = (req, res) => {
     res.status(400).json({ errors });
     return;
   }
-
+// check if time is between 9am and 4pm
+  const appointmentTime = new Date(`2000-01-01T${time}`);
+  const hour = appointmentTime.getHours();
+  if (hour < 9 || hour >= 16) {
+    const errors = handleErrorsForAppointments({ message: 'Appointments can only be scheduled between 9 AM and 4 PM' });
+    res.status(400).json({ errors });
+    return;
+  }
 //check if description data is greater than a certain length
 if (description.length > 100) {
   const errors = handleErrorsForAppointments({ message: 'description must be less than 100 characters' });

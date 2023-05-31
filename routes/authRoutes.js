@@ -10,6 +10,7 @@ router.post('/login', Controller.login_post);
 router.get('/logout', requireAuth, Controller.logout_get);
 router.get('/schedule', Controller.schedule_get);
 router.post('/schedule', Controller.schedule_post);
+router.get('/services', Controller.services_get);
 router.get('/contact', Controller.contact_get);
 router.get('/about', Controller.about_get);
 router.get('/appointments', requireAuth, Controller.appointment_get);

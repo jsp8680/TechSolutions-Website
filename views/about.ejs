@@ -3,19 +3,40 @@
   <title>About Us</title>
 </head>
 
+<style>
+.ab h1{
+  text-align: left;
+  font-size: 50px;
+  font-family: Arial, Helvetica, sans-serif;
+  
+  
+}
+h2{
+  text-align: left;
+  font-size: 30px;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 20px;
+  padding: 20px;
+}
+</style>
 <body>
   <%- include('partials/header') %>
-  <h1>About Us</h1>
+  <h1 name="ab">About Us</h1>
+  <br>
   <p>Our company was founded in 2020 by a group of friends who wanted to make a difference in the world. We are a small company that is dedicated to providing the best service possible to our customers. We are always looking for new ways to improve our services and make them more efficient. If you have any questions or concerns, please feel free to contact us at any time.</p>
-  <h2>Contact Information</h2>
+  <br>
+  <h2 name>Contact Information</h2> <br>
   <p>For any inquiries or support, please feel free to reach out to us:</p>
   <ul>
+    <br>
     <li>Email: info@example.com</li>
+    <br>
     <li>Phone: 123-456-7890</li>
+    <br>
+
     <li>Address: 123 Street, City, Country</li>
+    <br>
   </ul>
 </body>
 
-
-
-</html>
+<%- include('partials/footer'); -%>
