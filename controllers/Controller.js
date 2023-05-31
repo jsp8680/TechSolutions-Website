@@ -331,7 +331,7 @@ sgMail.setApiKey(API_KEY)
 function sendEmail(email,date, time){
 const msg = {
   to: email, // Change to your recipient
-  from: 'swagnum02@gmail.com', // Change to your verified sender
+  from: 'techsolutions598@gmail.com', // Change to your verified sender
   subject: 'Appointment Confirmation',
   text: 'dd',
   html: `<h1>Appointment Confirmation</h1>
