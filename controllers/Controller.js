@@ -218,27 +218,33 @@ module.exports.rescheduleAppointment_post = (req, res) => {
     });
 };
 
+module.exports.appointment_get = (req, res) => {
+  const userEmail = res.locals.user.email;
+  Appointment.find({ email: userEmail, status: 'Scheduled' })
+    .then(appointments => {
+      appointments.forEach(appointment => {
+        const appointmentDate = new Date(appointment.date);
+        const timeZoneOffset = appointmentDate.getTimezoneOffset() * 60000;
+        const adjustedDate = new Date(appointmentDate.getTime() + timeZoneOffset);
+        
+        appointment.date = adjustedDate.toLocaleDateString('en-US', { timeZone: 'America/Denver', year: 'numeric', month: 'long', day: 'numeric' });
 
-  module.exports.appointment_get = (req, res) => {
-    const userEmail = res.locals.user.email; // Assuming you have user authentication and the email is available in res.locals.user.email
-    console.log(res.locals.user.email); // Check if the email property exists
-    Appointment.find({ email: userEmail, status: 'Scheduled' })
-      .then(appointments => {
-        // Convert the time to AM/PM format
-        appointments.forEach(appointment => {
-          const [hour, minute] = appointment.time.split(":");
-          const date = new Date();
-          date.setHours(hour, minute);
-          appointment.time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-        });
-  
-        res.render('appointments', { appointments }); // Pass appointments as a local variable to the template
-      })
-      .catch(err => {
-        console.log(err);
-        res.render('error'); // Render an error page or handle the error appropriately
+        const [hour, minute] = appointment.time.split(":");
+        const appointmentTime = new Date();
+        appointmentTime.setHours(hour, minute);
+
+        appointment.time = appointmentTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
       });
-  }
+
+      res.render('appointments', { appointments });
+    })
+    .catch(err => {
+      console.log(err);
+      res.render('error');
+    });
+}
+
+
   
 
 
@@ -301,14 +307,13 @@ if (description.length < 10) {
     description,
     status: 'Scheduled', // Set initial status as 'Scheduled'
   });
-
   // Save the new appointment to the database
   newAppointment.save()
     .then(savedAppointment => {
       console.log('Appointment saved successfully!');
-      
       sendEmail(email, date, time);
        // Redirect to appointments page after successful scheduling
+      
       // Send the appointment data back in the response
     res.status(200).json({ appointment: savedAppointment });
     })
@@ -334,8 +339,8 @@ const msg = {
   <p>Thank you for scheduling an appointment with us. Your appointment is scheduled for ${date} at ${time}. We will contact you if there are any changes. We look forward to seeing you!</p>
     <p>Thank you,</p>
     <p>TechSolutions</p>
-    <p><a href="http://localhost:3000/reschedule">Reschedule</a></p>
-    <p><a href="http://localhost:3000/cancel">Cancel</a></p>
+    <p><a href="http://localhost:3000/appointments">Reschedule</a></p>
+    <p><a href="http://localhost:3000/appointments">Cancel</a></p>
     <p>For any questions or concerns, please contact us at 1-800-555-5555</p>`
 };
 
