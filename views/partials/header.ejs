@@ -21,22 +21,49 @@
 }
 /* Styles for the Navigation Bar */
 
+
 .navbar {
-  /* hide the navbar by default */
-  display: none;
-  /* stack the items vertically */
-  flex-direction: row;
-  /* center the text in the navbar */
+  display: flex;
   align-items: center;
-  /* add some padding around the text */
   padding: 20px;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #536ae9;
+  color: #fff;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  /* Add the following styles */
+  top: 100%;
+  left: -60px;
+}
 
 
+.dropdown-content a {
+  color: #000;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  size: 20px;
+}
 
-  /* add a border around the navbar */
-  /* border: 5px solid black; */
-
-
+.dropdown:hover .dropdown-content {
+  display: block;
 }
 
   </style>
@@ -57,12 +84,16 @@
   <img src="profile-icon.jpg" alt="Profile Icon">
 </div>
 
-<!-- Navigation Bar -->
 <div class="navbar" id="navbar">
   <ul>
-    <li><a href="/logout">Log Out</a></li> <br>
-    <li><a href="/profile">Profile</a></li> <br>
-    <li><a href="/appointments">Appointments</a></li> <br>
+    <li class="dropdown">
+      <a href="#" class="dropbtn">Menu</a>
+      <div class="dropdown-content">
+        <a href="/logout">Log Out</a>
+        <a href="/profile">Profile</a>
+        <a href="/appointments">Appointments</a>
+      </div>
+    </li>
   </ul>
 </div>
 
