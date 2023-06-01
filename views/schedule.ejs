@@ -91,8 +91,9 @@
     
     <input type="hidden" id="email" name="email" value="<%= user.email %>" readonly>
     <label for="date">Date:</label>
-    <input type="date" id="date" name="date" required>
+    <input type="date" id="date" name="date" onclick="weekendMessage()" required>
     <div class="date error"></div>
+    <div class="weekend message"></div>
     
     <label for="time">Time:</label>
     <input type="time" id="time" name="time" required>
@@ -129,6 +130,13 @@
 <script>
    function goBack() {
     window.history.back();
+  }
+  function weekendMessage(){
+    // if date input is selected
+    const dateInput = document.querySelector("#date");
+    const weekendMessage = document.querySelector(".weekend.message");
+
+    weekendMessage.textContent = "You can only schedule an appointment on a weekday.";
   }
 
   const form = document.querySelector("form");
