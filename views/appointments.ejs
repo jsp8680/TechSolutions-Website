@@ -1,8 +1,40 @@
 <%- include('partials/header') %>
+
+<style>
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 8px;
+  }
+
+  tr:nth-child(even) {
+    background-color: #ddbbfd;
+  }
+
+  th {
+    background-color: #3096f7;
+    color: white;
+    
+  }
+  #cancel:hover {
+      color: red;
+      
+    }
+    #reschedule:hover {
+      color: blue;
+    }
+    
+</style>
 <h1>Appointments</h1>
 
 <% if (appointments.length === 0) { %>
-  <p>No appointments found.</p>
+  <p>No appointments found.</p> <!-- Add a message if there are no appointments -->
+   <!-- Add a link to schedule an appointment -->
+  <a href="/schedule">Book an Appointment Here</a>
 <% } else { %>
   <table>
     <thead>
@@ -12,20 +44,25 @@
         <th>Service Type</th>
         <th>Description</th>
         <th>Status</th>
+        <th>Actions</th> <!-- Add a new column for actions -->
       </tr>
     </thead>
     <tbody>
       <% appointments.forEach(appointment => { %>
         <tr>
-          <td><%= appointment.date.toDateString() %></td>
+          <td><%= appointment.date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></td>
           <td><%= appointment.time %></td>
           <td><%= appointment.serviceType %></td>
           <td><%= appointment.description %></td>
           <td><%= appointment.status %></td>
+          <td>
+            <% if (appointment.status === 'Scheduled') { %>
+              <a id='cancel' href="/appointments/<%= appointment._id %>/cancel">Cancel</a> <!-- Add cancel link if status is 'scheduled' -->
+              <a id="reschedule" href="/appointments/<%= appointment._id %>/reschedule">Reschedule</a> <!-- Add reschedule link if status is 'scheduled' -->
+            <% } %>
+          </td>
         </tr>
       <% }); %>
     </tbody>
   </table>
 <% } %>
-
-    

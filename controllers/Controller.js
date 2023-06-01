@@ -5,13 +5,61 @@ const MongoClient = require('mongodb').MongoClient;
 const url = "mongodb+srv://censedpower8:coco1234@cluster1.hupl8dz.mongodb.net/";
 
 // handle errors
+
+const handleErrorsForAppointments = (err) => {
+  console.log(err.message, err.code);
+  let errors = {date: '', time: '', phone: '', serviceType: '', description: '' };
+
+   // Check if date is in the future
+   if (err.message.includes('date must be in the future')) {
+    errors.date = 'Date must be in the future';
+  }
+
+//
+// Check if the provided date is on a weekend (Saturday or Sunday)
+if (err.message.includes('Appointments cannot be scheduled on weekends')) {
+  errors.date = 'Appointments cannot be scheduled on weekends';
+}
+
+// Check if the time is between 9 AM and 4 PM
+if (err.message.includes('Appointments can only be scheduled between 9 AM and 4 PM')) {
+  errors.time = 'Appointments can only be scheduled between 9 AM and 4 PM';
+}
+  // Check if description data is greater than a certain length
+  if(err.message.includes('description must be less than 100 characters')){
+
+    errors.description = 'Description must be less than 100 characters';
+  }
+
+  // Check if description data is shorter than a certain length
+  if(err.message.includes('description must be more than 10 characters')){
+    errors.description = 'Description must be more than 10 characters';
+  }
+  // incorrect phone
+  if (err.message === 'incorrect phone') {
+    errors.phone = 'Invalid phone number';
+  }
+
+  
+  // validation errors
+  if (err.message.includes('appointments validation failed')) {
+    Object.values(err.errors).forEach(({ properties }) => {
+      errors[properties.path] = properties.message;
+    });
+  }
+  
+  return errors;
+};
+
 const handleErrors = (err) => {
   console.log(err.message, err.code);
   let errors = { firstname: '', lastname: '', email: '', password: '' };
 
+  
+
   // incorrect email
   if (err.message === 'incorrect email') {
-    errors.email = 'That email is not registered';
+    errors.email = 'Invalid email';
   }
 
   // incorrect password
@@ -21,7 +69,7 @@ const handleErrors = (err) => {
 
   // duplicate email error
   if (err.code === 11000) {
-    errors.email = 'that email is already registered';
+    errors.email = 'That email is already registered';
     return errors;
   }
 
@@ -34,7 +82,8 @@ const handleErrors = (err) => {
       errors[properties.path] = properties.message;
     });
   }
-
+  
+  
   return errors;
 }
 
@@ -99,8 +148,11 @@ module.exports.contact_get = (req, res) => {
 module.exports.about_get = (req, res) => {
   res.render('about');
 }
-
+module.exports.services_get = (req, res) => {
+  res.render('services');
+}
 module.exports.schedule_get = (req, res) => {
+  
   res.render('schedule');
 }
 
@@ -112,10 +164,65 @@ console.log(res.locals.user.email); // Check if the email property exists
 }
 
 
+
+module.exports.cancelAppointment = (req, res) => {
+  const appointmentId = req.params.id;
+
+  // Update the appointment status to "canceled" in the database
+  Appointment.findByIdAndDelete(appointmentId, { status: 'Canceled' })
+    .then(() => {
+      res.redirect('/appointments');
+    })
+    .catch(err => {
+      console.log(err);
+      res.render('error'); // Render an error page or handle the error appropriately
+    });
+};
+
+module.exports.rescheduleAppointment_get = (req, res) => {
+  const appointmentId = req.params.id;
+
+  // Implement the logic to reschedule the appointment
+  Appointment.findById(appointmentId)
+    .then(appointment => {
+      if (!appointment) {
+        // Handle case where appointment is not found
+        res.render('error', { message: 'Appointment not found' });
+      } else {
+        // Render the reschedule form with the appointment data
+        res.render('reschedule', { appointment });
+      }
+    })
+    .catch(err => {
+      // Handle error while fetching the appointment
+      console.log(err);
+      res.render('error', { message: 'Error fetching appointment' });
+    });
+};
+
+// Handle the form submission for rescheduling
+module.exports.rescheduleAppointment_post = (req, res) => {
+  const appointmentId = req.params.id;
+  const { date, time } = req.body;
+
+  // Update the existing appointment with the new date and time
+  Appointment.findByIdAndUpdate(appointmentId, { date, time })
+    .then(() => {
+      // Redirect to the appointments page after successful rescheduling
+      res.redirect('/appointments');
+    })
+    .catch(err => {
+      // Handle error while updating the appointment
+      console.log(err);
+      res.render('error', { message: 'Error rescheduling appointment' });
+    });
+};
+
+
   module.exports.appointment_get = (req, res) => {
     const userEmail = res.locals.user.email; // Assuming you have user authentication and the email is available in res.locals.user.email
     console.log(res.locals.user.email); // Check if the email property exists
-    Appointment.find({ email: userEmail })
+    Appointment.find({ email: userEmail, status: 'Scheduled' })
       .then(appointments => {
         // Convert the time to AM/PM format
         appointments.forEach(appointment => {
@@ -139,31 +246,50 @@ console.log(res.locals.user.email); // Check if the email property exists
   
 
 
-// module.exports.appointments_get = (req, res) => {
-//   const userEmail = req.user.email; // Assuming you have user authentication and the email is available in req.user.email
 
-//   Appointment.find({ email: userEmail })
-//     .then(appointments => {
-//       // Convert the time to AM/PM format
-//       appointments.forEach(appointment => {
-//         const [hour, minute] = appointment.time.split(":");
-//         const date = new Date();
-//         date.setHours(hour, minute);
-//         appointment.time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-//       });
-
-//       res.render('appointments', { appointments });
-//     })
-//     .catch(err => {
-//       console.log(err);
-//       res.render('error'); // Render an error page or handle the error appropriately
-//     });
-// }
 
 
 
 module.exports.schedule_post = (req, res) => {
   const { email, date, time, phone, serviceType, description } = req.body;
+
+
+   // Check if the provided date is in the past
+   if (new Date(date) < new Date()) {
+    const errors = handleErrorsForAppointments({ message: 'date must be in the future' });
+    res.status(400).json({ errors });
+    return;
+  }
+  // Check if the provided date is on a weekend (Saturday or Sunday)
+  const appointmentDate = new Date(date);
+  const dayOfWeek = appointmentDate.getDay();
+  console.log(dayOfWeek); 
+  if(dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6){
+    const errors = handleErrorsForAppointments({ message: 'Appointments cannot be scheduled on weekends' });
+    res.status(400).json({ errors });
+    return;
+  }
+// check if time is between 9am and 4pm
+  const appointmentTime = new Date(`2000-01-01T${time}`);
+  const hour = appointmentTime.getHours();
+  if (hour < 9 || hour >= 16) {
+    const errors = handleErrorsForAppointments({ message: 'Appointments can only be scheduled between 9 AM and 4 PM' });
+    res.status(400).json({ errors });
+    return;
+  }
+//check if description data is greater than a certain length
+if (description.length > 100) {
+  const errors = handleErrorsForAppointments({ message: 'description must be less than 100 characters' });
+  res.status(400).json({ errors });
+  return;
+}
+//check if description data is shorter than a certain length
+if (description.length < 10) {
+  const errors = handleErrorsForAppointments({ message: 'description must be more than 10 characters' });
+  res.status(400).json({ errors });
+  return;
+}
+  
 
   // Create a new appointment instance
   const newAppointment = new Appointment({
@@ -180,45 +306,20 @@ module.exports.schedule_post = (req, res) => {
   newAppointment.save()
     .then(savedAppointment => {
       console.log('Appointment saved successfully!');
+      
       sendEmail(email, date, time);
-      res.redirect('/'); // Redirect to appointments page after successful scheduling
+       // Redirect to appointments page after successful scheduling
+      // Send the appointment data back in the response
+    res.status(200).json({ appointment: savedAppointment });
     })
     .catch(err => {
-      console.log(err);
-      res.redirect('/schedule'); // Redirect to schedule page with an error message
+      const errors = handleErrorsForAppointments(err);
+      res.status(400).json({ errors });// Redirect to schedule page with an error message
     });
 };
 
 
-async function insertData(data, dbName, collectionName) {
-  // Create a new MongoClient
-  const client = new MongoClient(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
 
-  try {
-    // Connect to the MongoDB server
-    await client.connect();
-
-    // Access the database
-    const db = client.db(dbName);
-
-    // Access the collection
-    const collection = db.collection(collectionName);
-
-    // Insert the data
-    await collection.insertOne(data);
-
-    console.log("Data inserted successfully!");
-  } catch (error) {
-    console.error("Error occurred while inserting data:", error);
-    throw error;
-  } finally {
-    // Close the client connection
-    await client.close();
-  }
-}
 
 const sgMail = require('@sendgrid/mail')
 const API_KEY = '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'
@@ -226,7 +327,7 @@ sgMail.setApiKey(API_KEY)
 function sendEmail(email,date, time){
 const msg = {
   to: email, // Change to your recipient
-  from: 'swagnum02@gmail.com', // Change to your verified sender
+  from: 'techsolutions598@gmail.com', // Change to your verified sender
   subject: 'Appointment Confirmation',
   text: 'dd',
   html: `<h1>Appointment Confirmation</h1>

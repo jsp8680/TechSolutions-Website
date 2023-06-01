@@ -6,7 +6,7 @@ const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 const Appointment = require('./models/Appointment');
 const bodyParser = require('body-parser');
 const app = express();
-
+mongoose.set('useFindAndModify', false);
 // middleware
 app.use(express.static('public'));
 app.use(express.json());
@@ -26,7 +26,7 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCr
 // routes
 app.get('*', checkUser);
 app.get('/', (req, res) => res.render('home'));
-app.get('/smoothies', requireAuth, (req, res) => res.render('smoothies'));
+
 app.get('/schedule', (req, res) => res.render('schedule'));
 // app.get('/appointments',requireAuth, (req, res) => res.render('appointments'));
 
