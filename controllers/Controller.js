@@ -218,6 +218,8 @@ module.exports.rescheduleAppointment_post = (req, res) => {
     });
 };
 
+
+
 module.exports.appointment_get = (req, res) => {
   const userEmail = res.locals.user.email;
   Appointment.find({ email: userEmail, status: 'Scheduled' })
