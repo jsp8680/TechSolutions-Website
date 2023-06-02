@@ -3,12 +3,14 @@ const Appointment = require("../models/Appointment");
 const jwt = require('jsonwebtoken');
 const MongoClient = require('mongodb').MongoClient;
 const url = "mongodb+srv://censedpower8:coco1234@cluster1.hupl8dz.mongodb.net/";
+const sgMail = require('@sendgrid/mail')
+const API_KEY = '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'
+sgMail.setApiKey(API_KEY)
 
-// handle errors
-
-const handleErrorsForAppointments = (err) => {
+// handle errors for appointments
+const handleErrorsForAppointments = (err, timeMessage) => {
   console.log(err.message, err.code);
-  let errors = {date: '', time: '', phone: '', serviceType: '', description: '' };
+  let errors = {date: '', time: '', phone: '', serviceType: '', description: '',timeMessage: '' };
 
    // Check if date is in the future
    if (err.message.includes('date must be in the future')) {
@@ -24,6 +26,20 @@ if (err.message.includes('Appointments cannot be scheduled on weekends')) {
 // Check if the time is between 9 AM and 4 PM
 if (err.message.includes('Appointments can only be scheduled between 9 AM and 4 PM')) {
   errors.time = 'Appointments can only be scheduled between 9 AM and 4 PM';
+}
+
+// Check if there are no times available
+if(err.message.includes('No times available')){
+  errors.time = 'No times available.\n Choose another date.';
+}
+
+// Check if the provided time is already taken
+if(err.message.includes('Time is taken')){
+
+  errors.time = 'Time is unavailable';
+  errors.timeMessage = 'The following times are available: ' + timeMessage.timesAvailable.join(', ') + '.';
+  
+
 }
   // Check if description data is greater than a certain length
   if(err.message.includes('description must be less than 100 characters')){
@@ -51,11 +67,10 @@ if (err.message.includes('Appointments can only be scheduled between 9 AM and 4 
   return errors;
 };
 
-const handleErrors = (err) => {
+const handleErrorsForUsers = (err) => {
   console.log(err.message, err.code);
   let errors = { firstname: '', lastname: '', email: '', password: '' };
 
-  
 
   // incorrect email
   if (err.message === 'incorrect email') {
@@ -96,6 +111,7 @@ const createToken = (id) => {
 };
 
 // controller actions
+//get
 module.exports.signup_get = (req, res) => {
   res.render('signup');
 }
@@ -103,39 +119,6 @@ module.exports.signup_get = (req, res) => {
 module.exports.login_get = (req, res) => {
   res.render('login');
 }
-
-module.exports.signup_post = async (req, res) => {
-  const { firstname, lastname, email, password } = req.body;
-
-  try {
-    const user = await User.create({firstname,lastname, email, password });
-    const token = createToken(user._id);
-    res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(201).json({ user: user._id, email: user.email });
-  }
-  catch(err) {
-    const errors = handleErrors(err);
-    res.status(400).json({ errors });
-  }
- 
-}
-
-module.exports.login_post = async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const user = await User.login(email, password);
-    const token = createToken(user._id);
-    res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(200).json({ user: user._id, email: user.email });
-  } 
-  catch (err) {
-    const errors = handleErrors(err);
-    res.status(400).json({ errors });
-  }
-
-}
-
 module.exports.logout_get = (req, res) => {
   res.cookie('jwt', '', { maxAge: 1 });
   res.redirect('/');
@@ -151,99 +134,90 @@ module.exports.about_get = (req, res) => {
 module.exports.services_get = (req, res) => {
   res.render('services');
 }
-module.exports.test = async (req, res) => {
-  try {
-    const client = await MongoClient.connect(url);
-    const db = client.db("test");
-    const appointments = await db.collection("appointments").find({}).toArray();
 
-    // Extract time values from each appointment
-    const timeValues = appointments.map(appointment => appointment.time);
-
-    console.log(timeValues);
-    client.close();
-
-    res.render('test', { timeValues: timeValues });
-  } catch (err) {
-    console.error(err);
-    res.render('error', { message: 'Error fetching appointments' });
-  }
+module.exports.about_get = (req, res) => {
+// Check if the email property exists
+console.log(res.locals.user.email); 
+ res.render('about');
 }
 
-
-
+// get request for schedule that provides the times that can be scheduled
 module.exports.schedule_get = async (req, res) => {
-  const timeValues = ["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM","2:00 PM","3:00 PM","4:00 PM"];
+  const timeValues = ["9:00 AM", "10:00 AM", "11:00 AM", "1:00 PM","2:00 PM","3:00 PM","4:00 PM"];
+  const timeData = getData();
+  console.log(timeData)
   res.render('schedule', { timeValues: timeValues });
 };
 
+// post request for signup
+module.exports.signup_post = async (req, res) => {
+  const { firstname, lastname, email, password } = req.body;
 
-
-async function getData() {
   try {
-    const client = await MongoClient.connect(url);
-    const db = client.db("test");
-    const appointments = await db.collection("appointments").find({}).toArray();
+    const user = await User.create({firstname,lastname, email, password });
+    const token = createToken(user._id);
+    res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(201).json({ user: user._id, email: user.email });
+  }
+  catch(err) {
+    const errors = handleErrorsForUsers(err);
+    res.status(400).json({ errors });
+  }
+ 
+}
+// post request for login
+module.exports.login_post = async (req, res) => {
+  const { email, password } = req.body;
 
-    // Extract time values from each appointment
+  try {
+    const user = await User.login(email, password);
+    const token = createToken(user._id);
+    res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(200).json({ user: user._id, email: user.email });
+  } 
+  catch (err) {
+    const errors = handleErrorsForUsers(err);
+    res.status(400).json({ errors });
+  }
+
+}
+
+// function that gets the time values from the database
+async function getData(date) {
+  try {
+    const appointments = await Appointment.find({ date: date });
     const timeValues = appointments.map(appointment => appointment.time);
-
-    console.log(timeValues);
-    client.close();
-  } catch (err) {
-    console.error(err);
+    return timeValues;
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 }
 
-getData();
-
-
-// module.exports.schedule_get = (req, res) => {
-//   Appointment.find({ status: 'Scheduled' })
-//     .then(appointment => {
-//       if (!appointment) {
-//         // Handle case where appointment is not found
-//         res.render('error', { message: 'Appointment not found' });
-//       } else {
-//         // Render the reschedule form with the appointment data
-//         res.render('reschedule', { appointment });
-//       }
-//     })
-//     .catch(err => {
-//       // Handle error while fetching the appointment
-//       console.log(err);
-//       res.render('error', { message: 'Error fetching appointment' });
-//     });
-  
-//   res.render('schedule');
-// }
-
-module.exports.about_get = (req, res) => {
-  
-   // Check if the user property exists
-console.log(res.locals.user.email); // Check if the email property exists
-  res.render('about');
-}
-
-
-
+// Handle the form submission for canceling an appointment
 module.exports.cancelAppointment = (req, res) => {
   const appointmentId = req.params.id;
+  const userEmail = res.locals.user.email;
+
 
   // Update the appointment status to "canceled" in the database
   Appointment.findByIdAndDelete(appointmentId, { status: 'Canceled' })
     .then(() => {
+      
       res.redirect('/appointments');
     })
     .catch(err => {
       console.log(err);
       res.render('error'); // Render an error page or handle the error appropriately
     });
+    sendEmail(userEmail,'',"",'canceled');
+    
 };
 
+// Render the reschedule form
 module.exports.rescheduleAppointment_get = (req, res) => {
   const appointmentId = req.params.id;
-
+  const time = ["9:00 AM", "10:00 AM", "11:00 AM", "1:00 PM","2:00 PM","3:00 PM","4:00 PM"];
   // Implement the logic to reschedule the appointment
   Appointment.findById(appointmentId)
     .then(appointment => {
@@ -252,7 +226,7 @@ module.exports.rescheduleAppointment_get = (req, res) => {
         res.render('error', { message: 'Appointment not found' });
       } else {
         // Render the reschedule form with the appointment data
-        res.render('reschedule', { appointment });
+        res.render('reschedule', { appointment, time });
       }
     })
     .catch(err => {
@@ -260,17 +234,19 @@ module.exports.rescheduleAppointment_get = (req, res) => {
       console.log(err);
       res.render('error', { message: 'Error fetching appointment' });
     });
+    
 };
 
 // Handle the form submission for rescheduling
-module.exports.rescheduleAppointment_post = (req, res) => {
+module.exports.rescheduleAppointment_post = async (req, res) => {
   const appointmentId = req.params.id;
-  const { date, time } = req.body;
-
+  const { email ,date, time } = req.body;
+ 
   // Update the existing appointment with the new date and time
   Appointment.findByIdAndUpdate(appointmentId, { date, time })
     .then(() => {
       // Redirect to the appointments page after successful rescheduling
+      
       res.redirect('/appointments');
     })
     .catch(err => {
@@ -278,10 +254,11 @@ module.exports.rescheduleAppointment_post = (req, res) => {
       console.log(err);
       res.render('error', { message: 'Error rescheduling appointment' });
     });
+    sendEmail(email,date,time,'rescheduled');
 };
 
 
-
+// Shows the appointments page with the appointments for the logged in user
 module.exports.appointment_get = (req, res) => {
   const userEmail = res.locals.user.email;
   Appointment.find({ email: userEmail, status: 'Scheduled' })
@@ -292,12 +269,6 @@ module.exports.appointment_get = (req, res) => {
         const adjustedDate = new Date(appointmentDate.getTime() + timeZoneOffset);
         
         appointment.date = adjustedDate.toLocaleDateString('en-US', { timeZone: 'America/Denver', year: 'numeric', month: 'long', day: 'numeric' });
-
-        // const [hour, minute] = appointment.time.split(":");
-        // const appointmentTime = new Date();
-        // appointmentTime.setHours(hour, minute);
-
-        // appointment.time = appointmentTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
       });
 
       res.render('appointments', { appointments });
@@ -308,22 +279,37 @@ module.exports.appointment_get = (req, res) => {
     });
 }
 
-
-  
-
-
-
-  
-
-
-
-
-
-
-module.exports.schedule_post = (req, res) => {
+// Handle the form submission for scheduling an appointment
+module.exports.schedule_post = async (req, res) => {
   const { email, date, time, phone, serviceType, description } = req.body;
 
+  const timeValues = await getData(date);
+  const timesAvailable = ["9:00 AM", "10:00 AM", "11:00 AM", "1:00 PM","2:00 PM","3:00 PM","4:00 PM"];
+  console.log(timeValues);
+  console.log(timesAvailable.join(","));
 
+// remove the times that are already taken from the times available
+for (let i = 0; i < timeValues.length; i++) {
+ if(timesAvailable.includes(timeValues[i])){
+   timesAvailable.splice(timesAvailable.indexOf(timeValues[i]), 1);
+ }
+
+}
+console.log(timesAvailable.join(",") + " times available");
+// Check if there are no times available
+if(timesAvailable.length === 0){
+  console.log("no times available");
+  const errors = handleErrorsForAppointments({ message: 'No times available' });
+  res.status(400).json({ errors });
+  return;
+}
+
+// Check if the provided time is already taken
+  if (timeValues.includes(time)) {
+    const errors = handleErrorsForAppointments({ message: 'Time is taken' }, { timesAvailable } );
+    res.status(400).json({ errors: { ...errors, timeMessage: errors.timeMessage } });
+    return;
+  }
    // Check if the provided date is in the past
    if (new Date(date) < new Date()) {
     const errors = handleErrorsForAppointments({ message: 'date must be in the future' });
@@ -334,7 +320,8 @@ module.exports.schedule_post = (req, res) => {
   const appointmentDate = new Date(date);
   const dayOfWeek = appointmentDate.getDay();
   console.log(dayOfWeek); 
-  if(dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6){
+  // 5 is Saturday, 6 is Sunday and if the day is either of those, then return an error
+  if(dayOfWeek === 5 || dayOfWeek === 6){
     const errors = handleErrorsForAppointments({ message: 'Appointments cannot be scheduled on weekends' });
     res.status(400).json({ errors });
     return;
@@ -360,7 +347,6 @@ if (description.length < 10) {
   return;
 }
   
-
   // Create a new appointment instance
   const newAppointment = new Appointment({
     email,
@@ -375,7 +361,8 @@ if (description.length < 10) {
   newAppointment.save()
     .then(savedAppointment => {
       console.log('Appointment saved successfully!');
-      sendEmail(email, date, time);
+      // Send the appointment confirmation email
+      sendEmail(email, date, time, 'scheduled');
        // Redirect to appointments page after successful scheduling
       
       // Send the appointment data back in the response
@@ -388,32 +375,86 @@ if (description.length < 10) {
 };
 
 
-
-
-const sgMail = require('@sendgrid/mail')
-const API_KEY = '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'
-sgMail.setApiKey(API_KEY)
-function sendEmail(email,date, time){
-const msg = {
-  to: email, // Change to your recipient
-  from: 'techsolutions598@gmail.com', // Change to your verified sender
-  subject: 'Appointment Confirmation',
-  text: 'dd',
-  html: `<h1>Appointment Confirmation</h1>
-  <p>Thank you for scheduling an appointment with us. Your appointment is scheduled for ${date} at ${time}. We will contact you if there are any changes. We look forward to seeing you!</p>
+// Function that sends the email
+function sendEmail(email, date, time, type) {
+  let subject, content;
+console.log(email);
+  // Set the subject and content based on the type
+  if (type === 'scheduled') {
+    subject = 'Appointment Confirmation';
+    content = `<h1>Appointment Confirmation</h1>
+    <p>Thank you for scheduling an appointment with us. Your appointment is scheduled for ${date} at ${time}. We will contact you if there are any changes. We look forward to seeing you!</p>
     <p>Thank you,</p>
     <p>TechSolutions</p>
     <p><a href="http://localhost:3000/appointments">Reschedule</a></p>
     <p><a href="http://localhost:3000/appointments">Cancel</a></p>
-    <p>For any questions or concerns, please contact us at 1-800-555-5555</p>`
-};
+    <p>For any questions or concerns, please contact us at 1-800-555-5555</p>`;
+  } else if (type === 'canceled') {
+    subject = 'Appointment Cancellation';
+    content = `<h1>Appointment Cancellation</h1>
+    <p>Your appointment has been canceled.</p>
+    <p>Thank you,</p>
+    <p>TechSolutions</p>
+    <p><a href="http://localhost:3000/appointments">Reschedule</a></p>
+    <p><a href="http://localhost:3000/appointments">Schedule a new appointment</a></p>
+    <p>For any questions or concerns, please contact us at 1-800-555-5555</p>`;
+  } else if (type === 'rescheduled') {
+    subject = 'Appointment Rescheduled';
+    content = `<h1>Appointment Rescheduled</h1>
+    <p>Your appointment originally scheduled for ${date} at ${time} has been rescheduled. The new appointment details are as follows:</p>
+    <p>Date: [New Date]</p>
+    <p>Time: [New Time]</p>
+    <p>We apologize for any inconvenience caused by this change.</p>
+    <p>Thank you for your understanding,</p>
+    <p>TechSolutions</p>
+    <p><a href="http://localhost:3000/appointments">Reschedule</a></p>
+    <p><a href="http://localhost:3000/appointments">Cancel</a></p>
+    <p>For any questions or concerns, please contact us at 1-800-555-5555</p>`;
+  } else {
+    console.error('Invalid email type');
+    return;
+  }
 
-sgMail
-  .send(msg)
-  .then(() => {
-    console.log('Email sent')
-  })
-  .catch((error) => {
-    console.error(error)
-  })
+  const msg = {
+    to: email,
+    from: 'techsolutions598@gmail.com',
+    subject: subject,
+    text: 'dd',
+    html: content
+  };
+
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log('Email sent');
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
+
+// // function that sends the email
+// function sendEmail(email,date, time,type){
+//   const msg = {
+//     to: email, // Change to your recipient
+//     from: 'techsolutions598@gmail.com', // Change to your verified sender
+//     subject: 'Appointment Confirmation',
+//     text: 'dd',
+//     html: `<h1>Appointment Confirmation</h1>
+//     <p>Thank you for scheduling an appointment with us. Your appointment is scheduled for ${date} at ${time}. We will contact you if there are any changes. We look forward to seeing you!</p>
+//       <p>Thank you,</p>
+//       <p>TechSolutions</p>
+//       <p><a href="http://localhost:3000/appointments">Reschedule</a></p>
+//       <p><a href="http://localhost:3000/appointments">Cancel</a></p>
+//       <p>For any questions or concerns, please contact us at 1-800-555-5555</p>`
+//   };
+  
+//   sgMail
+//     .send(msg)
+//     .then(() => {
+//       console.log('Email sent')
+//     })
+//     .catch((error) => {
+//       console.error(error)
+//     })
+//   }

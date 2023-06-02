@@ -9,7 +9,6 @@ router.get('/login', Controller.login_get);
 router.post('/login', Controller.login_post);
 router.get('/logout', requireAuth, Controller.logout_get);
 router.get('/schedule', Controller.schedule_get);
-router.get('/test', Controller.test);
 router.post('/schedule', Controller.schedule_post);
 router.get('/services', Controller.services_get);
 router.get('/contact', Controller.contact_get);
