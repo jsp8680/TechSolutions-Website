@@ -151,10 +151,72 @@ module.exports.about_get = (req, res) => {
 module.exports.services_get = (req, res) => {
   res.render('services');
 }
-module.exports.schedule_get = (req, res) => {
-  
-  res.render('schedule');
+module.exports.test = async (req, res) => {
+  try {
+    const client = await MongoClient.connect(url);
+    const db = client.db("test");
+    const appointments = await db.collection("appointments").find({}).toArray();
+
+    // Extract time values from each appointment
+    const timeValues = appointments.map(appointment => appointment.time);
+
+    console.log(timeValues);
+    client.close();
+
+    res.render('test', { timeValues: timeValues });
+  } catch (err) {
+    console.error(err);
+    res.render('error', { message: 'Error fetching appointments' });
+  }
 }
+
+
+
+module.exports.schedule_get = async (req, res) => {
+  const timeValues = ["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM","2:00 PM","3:00 PM","4:00 PM"];
+  res.render('schedule', { timeValues: timeValues });
+};
+
+
+
+async function getData() {
+  try {
+    const client = await MongoClient.connect(url);
+    const db = client.db("test");
+    const appointments = await db.collection("appointments").find({}).toArray();
+
+    // Extract time values from each appointment
+    const timeValues = appointments.map(appointment => appointment.time);
+
+    console.log(timeValues);
+    client.close();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+getData();
+
+
+// module.exports.schedule_get = (req, res) => {
+//   Appointment.find({ status: 'Scheduled' })
+//     .then(appointment => {
+//       if (!appointment) {
+//         // Handle case where appointment is not found
+//         res.render('error', { message: 'Appointment not found' });
+//       } else {
+//         // Render the reschedule form with the appointment data
+//         res.render('reschedule', { appointment });
+//       }
+//     })
+//     .catch(err => {
+//       // Handle error while fetching the appointment
+//       console.log(err);
+//       res.render('error', { message: 'Error fetching appointment' });
+//     });
+  
+//   res.render('schedule');
+// }
 
 module.exports.about_get = (req, res) => {
   
@@ -231,11 +293,11 @@ module.exports.appointment_get = (req, res) => {
         
         appointment.date = adjustedDate.toLocaleDateString('en-US', { timeZone: 'America/Denver', year: 'numeric', month: 'long', day: 'numeric' });
 
-        const [hour, minute] = appointment.time.split(":");
-        const appointmentTime = new Date();
-        appointmentTime.setHours(hour, minute);
+        // const [hour, minute] = appointment.time.split(":");
+        // const appointmentTime = new Date();
+        // appointmentTime.setHours(hour, minute);
 
-        appointment.time = appointmentTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        // appointment.time = appointmentTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
       });
 
       res.render('appointments', { appointments });
