@@ -58,7 +58,6 @@
           <td>
             <% if (appointment.status === 'Scheduled') { %>
               <a id='cancel' href="/appointments/<%= appointment._id %>/cancel">Cancel</a> <!-- Add cancel link if status is 'scheduled' -->
-              <a id="reschedule" href="/appointments/<%= appointment._id %>/reschedule">Reschedule</a> <!-- Add reschedule link if status is 'scheduled' -->
             <% } %>
           </td>
         </tr>

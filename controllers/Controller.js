@@ -42,9 +42,9 @@ if(err.message.includes('Time is taken')){
 
 }
   // Check if description data is greater than a certain length
-  if(err.message.includes('description must be less than 100 characters')){
+  if(err.message.includes('description must be less than 300 characters')){
 
-    errors.description = 'Description must be less than 100 characters';
+    errors.description = 'Description must be less than 300 characters';
   }
 
   // Check if description data is shorter than a certain length
@@ -141,6 +141,19 @@ console.log(res.locals.user.email);
  res.render('about');
 }
 
+module.exports.profile_get = (req, res) => {
+
+  function maskPassword(password) {
+    return '*'.repeat(10);
+  }
+  function fullName(firstname, lastname) {
+    return firstname + " " + lastname;
+  }
+  const password = maskPassword(res.locals.user.password);
+  const user = res.locals.user;
+  const name = fullName(user.firstname, user.lastname);
+  res.render('profile', {user, password,name});
+}
 // get request for schedule that provides the times that can be scheduled
 module.exports.schedule_get = async (req, res) => {
   const timeValues = ["9:00 AM", "10:00 AM", "11:00 AM", "1:00 PM","2:00 PM","3:00 PM","4:00 PM"];
@@ -212,49 +225,6 @@ module.exports.cancelAppointment = (req, res) => {
     });
     sendEmail(userEmail,'',"",'canceled');
     
-};
-
-// Render the reschedule form
-module.exports.rescheduleAppointment_get = (req, res) => {
-  const appointmentId = req.params.id;
-  const time = ["9:00 AM", "10:00 AM", "11:00 AM", "1:00 PM","2:00 PM","3:00 PM","4:00 PM"];
-  // Implement the logic to reschedule the appointment
-  Appointment.findById(appointmentId)
-    .then(appointment => {
-      if (!appointment) {
-        // Handle case where appointment is not found
-        res.render('error', { message: 'Appointment not found' });
-      } else {
-        // Render the reschedule form with the appointment data
-        res.render('reschedule', { appointment, time });
-      }
-    })
-    .catch(err => {
-      // Handle error while fetching the appointment
-      console.log(err);
-      res.render('error', { message: 'Error fetching appointment' });
-    });
-    
-};
-
-// Handle the form submission for rescheduling
-module.exports.rescheduleAppointment_post = async (req, res) => {
-  const appointmentId = req.params.id;
-  const { email ,date, time } = req.body;
- 
-  // Update the existing appointment with the new date and time
-  Appointment.findByIdAndUpdate(appointmentId, { date, time })
-    .then(() => {
-      // Redirect to the appointments page after successful rescheduling
-      
-      res.redirect('/appointments');
-    })
-    .catch(err => {
-      // Handle error while updating the appointment
-      console.log(err);
-      res.render('error', { message: 'Error rescheduling appointment' });
-    });
-    sendEmail(email,date,time,'rescheduled');
 };
 
 
@@ -335,8 +305,8 @@ if(timesAvailable.length === 0){
     return;
   }
 //check if description data is greater than a certain length
-if (description.length > 100) {
-  const errors = handleErrorsForAppointments({ message: 'description must be less than 100 characters' });
+if (description.length > 300) {
+  const errors = handleErrorsForAppointments({ message: 'description must be less than 300 characters' });
   res.status(400).json({ errors });
   return;
 }
