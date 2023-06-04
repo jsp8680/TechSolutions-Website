@@ -139,6 +139,9 @@ module.exports.about_get = (req, res) => {
 
  res.render('about');
 }
+module.exports.policies_get = (req, res) => {
+  res.render('policies');
+}
 
 module.exports.profile_get = (req, res) => {
 
@@ -212,7 +215,7 @@ module.exports.cancelAppointment = (req, res) => {
 
 
   // Update the appointment status to "canceled" in the database
-  Appointment.findByIdAndDelete(appointmentId, { status: 'Canceled' })
+  Appointment.findByIdAndDelete(appointmentId )
     .then(() => {
       
       res.redirect('/appointments');
@@ -335,6 +338,29 @@ if (description.length < 10) {
       const errors = handleErrorsForAppointments(err);
       res.status(400).json({ errors });// Redirect to schedule page with an error message
     });
+};
+module.exports.delete_post = async (req, res) => {
+
+  const user = req.params.id;
+  const userEmail = req.params.email;
+  try {
+    // Delete the user from the database
+    await User.findOneAndDelete({ _id: user});
+    console.log('User deleted successfully');
+
+    await Appointment.deleteMany({ email: userEmail});
+    console.log('Appointments deleted successfully');
+
+
+    // Redirect or send a response indicating successful deletion
+    res.cookie('jwt', 'secret', { maxAge: 1 });
+    res.redirect('/'); // Example: Redirect to the homepage
+  } catch (error) {
+    console.error(error);
+    // Handle any errors that occur during the deletion process
+    // Redirect or send an error response
+    res.status(500).json({ error: 'An error occurred while deleting the user account.' });
+  }
 };
 
 

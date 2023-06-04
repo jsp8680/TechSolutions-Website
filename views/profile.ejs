@@ -1,4 +1,20 @@
 <%- include('partials/header'); -%>
+<style>
+  /* move the button over to the delete account text */
+  /* make it smaller and red */
+  .del-btn {
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    border-radius: 30px;
+    margin-left: 270px;
+    margin-top: -60px;
+  }
+  /* center body */
+  body {
+    text-align: center;
+  }
+</style>
 <head>
   <title>User Profile</title>
 </head>
@@ -8,6 +24,11 @@
     <p><strong>Name:</strong> <%= name %></p>
     <p><strong>Email:</strong> <%= user.email %></p>
     <p><strong>Password:</strong> <%= password %></p>
+    <br>
+    <p><strong>Delete Account:</strong></p>
+    <form action="/delete/<%= user._id %>/<%= user.email %>" method="POST">
+      <button class="del-btn">Delete</button>
+    </form>
   </div>
 
   <script>

@@ -10,25 +10,20 @@
     margin: 0;
     font-size: 20px;
   padding: 0;
-  font-family: 'Quicksand', sans-serif;
+  font-family: 'Geologica',Arial, Helvetica, sans-serif;
   color: #000000;
     }
 .profile-icon {
   cursor: pointer;
-  /* make it smaller */
+ 
   width: 50px;
   height: 50px;
-  /* make it circular */
+ 
   border-radius: 50%;
-  /* add a border around it */
-  /* border: 5px solid black; */
-  /* center the image */
   display: flex;
   justify-content: center;
 }
 /* Styles for the Navigation Bar */
-
-
 .navbar {
   display: none;
   align-items: center;
@@ -55,7 +50,6 @@
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
-  /* Add the following styles */
   top: 100%;
   left: -60px;
 }
@@ -75,6 +69,12 @@
 .sign{
   border-radius: 36px;
   background: #008fee;
+  color: white;
+}
+.log{
+  border-radius: 36px;
+  background: #008fee;
+  color: white;
 }
 
   </style>
@@ -110,8 +110,10 @@
 
       <% } else { %>
         <li><a href='/'>Home</a></li>
+        <li><a href='/schedule'>Book an Appointment</a></li>
         <li><a href='/about'>About Us</a></li>
-        <li><a href="/login">Log in</a></li>
+        <li><a href='/services'>Services</a></li>
+        <li><a href="/login" class="log">Log in</a></li>
         <li><a href="/signup" class="sign">Sign up</a></li>
       <% } %>
     </ul>

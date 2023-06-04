@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
 });
 
 
-// fire a function before doc saved to db
+// fire a function before document is saved to database
 userSchema.pre('save', async function(next) {
   const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);

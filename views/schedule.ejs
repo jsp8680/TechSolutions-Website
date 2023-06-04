@@ -34,21 +34,6 @@
   text-align: left;
   float: left;
 }
-    /* #goBack {
-  margin-top: 0px;
-  border-radius: 36px;
-  background: #a6adbe;
-  border:0;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 0.8em;
-  align-items: end;
-  display: block;
-  padding: 10px 16px;
-  letter-spacing: 2px;
-  margin-bottom: 10px;
-  align-content: baseline;
-    } */
     input[type="submit"]:hover {
       background-color: #73787e;
     }
@@ -56,27 +41,14 @@
       color: red;
       margin-bottom: 20px;
     }
-    #else-header{
+     #else-header{
       text-align: center;
       font-size: 35px;
-      color: #3096f7;
+      color: #242a30;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       font-weight: bold;
     }
-    #else-login{
-      align-self: center;
-      font-size: 25px;
-      color: #834de7;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-weight: bold;
-    }
-    #else-signUp{
-      align-self: center;
-      font-size: 25px;
-      color: #834de7;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-weight: bold;
-    }
+     
 #time, #serviceType{
   width: 100%;
   padding: 8px;
@@ -157,8 +129,9 @@
   </form>
   <% } else { %>
     <h1 id="else-header">Please Login or Sign Up to schedule an appointment</h1>
-<a id="else-login" href="/login">Login</a>
-<a id="else-signUp" href="/signup">Sign Up</a>
+    <br><br><br><br><br> <br><br><br><br>
+
+
   <% } %>
 </body>
 <script>
