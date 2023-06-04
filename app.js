@@ -20,7 +20,7 @@ app.set('view engine', 'ejs');
 // database connection
 const dbURI = 'mongodb+srv://censedpower8:coco1234@cluster1.hupl8dz.mongodb.net/';
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then((result) => app.listen(3000))
+  .then((result) => app.listen(3000),console.log('Server is running on port 3000 http://localhost:3000/'))
   .catch((err) => console.log(err));
 
 // routes

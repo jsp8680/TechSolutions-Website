@@ -1,4 +1,5 @@
 <%- include('partials/header'); -%>
+<title>Sign Up</title>
 <style>
   /* add a underline to show the policy link */
   .policy {
@@ -9,6 +10,7 @@
   .policy:hover {
     color: #536ae9;
   }
+
 </style>
 <form action="/signup">
   <h2>Sign up</h2>
@@ -24,7 +26,7 @@
   <label for="password">Password</label>
   <input type="password" name="password" required/>
   <div class="password error"></div>
-  <p>By signing up, you agree to the <a class='policy'href="/policies">policies</a>.</p>
+  <p>By signing up, you agree to the <a class='policy'href="/policies" target="_blank">policies</a>.</p>
   <button>Sign up</button>
 </form>
 
