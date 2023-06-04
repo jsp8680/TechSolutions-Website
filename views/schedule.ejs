@@ -85,12 +85,34 @@
   border-radius: 4px;
 
 }
+#goBack {
+    position: absolute;
+    top: 100px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    background: none;
+    border: none;
+    color: #536ae9;
+    cursor: pointer;
+  }
+
+  #goBack svg {
+    margin-right: 4px;
+  }
   </style>
 </head>
 
 <% if(user) {%>
 <body>
-  <button id='goBack'onclick="goBack()">Go Back</button>
+  <button id="goBack" onclick="goBack()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#000000" width="24px" height="24px">
+      <path d="M0 0h24v24H0z" fill="none" />
+      <path d="M15.59 7.41L14.17 6l-6 6 6 6 1.41-1.41L10.58 12z" />
+    </svg>
+    Go Back
+  </button>
   <form method="POST" action="/schedule">
     <h1>Schedule an Appointment</h1>
     <p>Please fill in this form to schedule an appointment.</p>

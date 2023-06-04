@@ -105,7 +105,7 @@ const handleErrorsForUsers = (err) => {
 // create json web token
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
-  return jwt.sign({ id }, 'net ninja secret', {
+  return jwt.sign({ id }, 'secret', {
     expiresIn: maxAge
   });
 };
@@ -136,8 +136,7 @@ module.exports.services_get = (req, res) => {
 }
 
 module.exports.about_get = (req, res) => {
-// Check if the email property exists
-console.log(res.locals.user.email); 
+
  res.render('about');
 }
 
@@ -158,7 +157,6 @@ module.exports.profile_get = (req, res) => {
 module.exports.schedule_get = async (req, res) => {
   const timeValues = ["9:00 AM", "10:00 AM", "11:00 AM", "1:00 PM","2:00 PM","3:00 PM","4:00 PM"];
   const timeData = getData();
-  console.log(timeData)
   res.render('schedule', { timeValues: timeValues });
 };
 
@@ -255,8 +253,6 @@ module.exports.schedule_post = async (req, res) => {
 
   const timeValues = await getData(date);
   const timesAvailable = ["9:00 AM", "10:00 AM", "11:00 AM", "1:00 PM","2:00 PM","3:00 PM","4:00 PM"];
-  console.log(timeValues);
-  console.log(timesAvailable.join(","));
 
 // remove the times that are already taken from the times available
 for (let i = 0; i < timeValues.length; i++) {
@@ -265,10 +261,8 @@ for (let i = 0; i < timeValues.length; i++) {
  }
 
 }
-console.log(timesAvailable.join(",") + " times available");
 // Check if there are no times available
 if(timesAvailable.length === 0){
-  console.log("no times available");
   const errors = handleErrorsForAppointments({ message: 'No times available' });
   res.status(400).json({ errors });
   return;
@@ -289,7 +283,6 @@ if(timesAvailable.length === 0){
   // Check if the provided date is on a weekend (Saturday or Sunday)
   const appointmentDate = new Date(date);
   const dayOfWeek = appointmentDate.getDay();
-  console.log(dayOfWeek); 
   // 5 is Saturday, 6 is Sunday and if the day is either of those, then return an error
   if(dayOfWeek === 5 || dayOfWeek === 6){
     const errors = handleErrorsForAppointments({ message: 'Appointments cannot be scheduled on weekends' });
@@ -332,7 +325,7 @@ if (description.length < 10) {
     .then(savedAppointment => {
       console.log('Appointment saved successfully!');
       // Send the appointment confirmation email
-      sendEmail(email, date, time, 'scheduled');
+      sendEmail(email, date, time);
        // Redirect to appointments page after successful scheduling
       
       // Send the appointment data back in the response
@@ -346,51 +339,20 @@ if (description.length < 10) {
 
 
 // Function that sends the email
-function sendEmail(email, date, time, type) {
-  let subject, content;
-console.log(email);
-  // Set the subject and content based on the type
-  if (type === 'scheduled') {
-    subject = 'Appointment Confirmation';
-    content = `<h1>Appointment Confirmation</h1>
-    <p>Thank you for scheduling an appointment with us. Your appointment is scheduled for ${date} at ${time}. We will contact you if there are any changes. We look forward to seeing you!</p>
-    <p>Thank you,</p>
-    <p>TechSolutions</p>
-    <p><a href="http://localhost:3000/appointments">Reschedule</a></p>
-    <p><a href="http://localhost:3000/appointments">Cancel</a></p>
-    <p>For any questions or concerns, please contact us at 1-800-555-5555</p>`;
-  } else if (type === 'canceled') {
-    subject = 'Appointment Cancellation';
-    content = `<h1>Appointment Cancellation</h1>
-    <p>Your appointment has been canceled.</p>
-    <p>Thank you,</p>
-    <p>TechSolutions</p>
-    <p><a href="http://localhost:3000/appointments">Reschedule</a></p>
-    <p><a href="http://localhost:3000/appointments">Schedule a new appointment</a></p>
-    <p>For any questions or concerns, please contact us at 1-800-555-5555</p>`;
-  } else if (type === 'rescheduled') {
-    subject = 'Appointment Rescheduled';
-    content = `<h1>Appointment Rescheduled</h1>
-    <p>Your appointment originally scheduled for ${date} at ${time} has been rescheduled. The new appointment details are as follows:</p>
-    <p>Date: [New Date]</p>
-    <p>Time: [New Time]</p>
-    <p>We apologize for any inconvenience caused by this change.</p>
-    <p>Thank you for your understanding,</p>
-    <p>TechSolutions</p>
-    <p><a href="http://localhost:3000/appointments">Reschedule</a></p>
-    <p><a href="http://localhost:3000/appointments">Cancel</a></p>
-    <p>For any questions or concerns, please contact us at 1-800-555-5555</p>`;
-  } else {
-    console.error('Invalid email type');
-    return;
-  }
+function sendEmail(email, date, time) {
+
 
   const msg = {
     to: email,
     from: 'techsolutions598@gmail.com',
-    subject: subject,
+    subject: 'Appointment Confirmation',
     text: 'dd',
-    html: content
+    html: `<h1>Appointment Confirmation</h1>
+    <p>Thank you for scheduling an appointment with us. Your appointment is scheduled for ${date} at ${time}. We will contact you if there are any changes. We look forward to seeing you!</p>
+    <p>Thank you,</p>
+    <p>TechSolutions</p>
+    <p><a href="http://localhost:3000/appointments">Cancel</a></p>
+    <p>For any questions or concerns, please contact us at 1-800-555-5555</p>`,
   };
 
   sgMail
@@ -403,28 +365,3 @@ console.log(email);
     });
 }
 
-// // function that sends the email
-// function sendEmail(email,date, time,type){
-//   const msg = {
-//     to: email, // Change to your recipient
-//     from: 'techsolutions598@gmail.com', // Change to your verified sender
-//     subject: 'Appointment Confirmation',
-//     text: 'dd',
-//     html: `<h1>Appointment Confirmation</h1>
-//     <p>Thank you for scheduling an appointment with us. Your appointment is scheduled for ${date} at ${time}. We will contact you if there are any changes. We look forward to seeing you!</p>
-//       <p>Thank you,</p>
-//       <p>TechSolutions</p>
-//       <p><a href="http://localhost:3000/appointments">Reschedule</a></p>
-//       <p><a href="http://localhost:3000/appointments">Cancel</a></p>
-//       <p>For any questions or concerns, please contact us at 1-800-555-5555</p>`
-//   };
-  
-//   sgMail
-//     .send(msg)
-//     .then(() => {
-//       console.log('Email sent')
-//     })
-//     .catch((error) => {
-//       console.error(error)
-//     })
-//   }

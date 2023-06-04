@@ -24,7 +24,9 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCr
   .catch((err) => console.log(err));
 
 // routes
+// checks if the user is authenticated for every route.
 app.get('*', checkUser);
+// renders the "home" view when accessing the root URL.
 app.get('/', (req, res) => res.render('home'));
 
 app.use(authRoutes);
