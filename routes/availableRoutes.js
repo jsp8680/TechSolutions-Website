@@ -18,6 +18,7 @@ router.get('/appointments/:id/cancel',requireAuth, Controller.cancelAppointment)
 router.get('/profile',requireAuth, Controller.profile_get);
 router.get('/policies', Controller.policies_get);
 router.post('/delete/:id/:email',requireAuth, Controller.delete_post);
+router.get('/error', Controller.error_get);
 
 
 

@@ -1,9 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const authRoutes = require('./routes/authRoutes');
+const Routes = require('./routes/availableRoutes');
 const cookieParser = require('cookie-parser');
 const { requireAuth, checkUser } = require('./middleware/middleware');
-const Appointment = require('./models/Appointment');
 const bodyParser = require('body-parser');
 const app = express();
 
@@ -24,13 +23,15 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .catch((err) => console.log(err));
 
 // routes
+
 // checks if the user is authenticated for every route.
 app.get('*', checkUser);
 // renders the "home" view when accessing the root URL.
 app.get('/', (req, res) => res.render('home'));
 
-app.use(authRoutes);
+app.use(Routes);
 
-const createApp = () => app;
+// for testing purposes
+// const createApp = () => app;
 
-module.exports = createApp;
+// module.exports = createApp;

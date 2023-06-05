@@ -14,10 +14,12 @@
 <%- include('partials/footer'); -%>
 
 <script>
+  // client side js
   const form = document.querySelector('form');
   const emailError = document.querySelector('.email.error');
   const passwordError = document.querySelector('.password.error');
 
+ // Add an event listener to the form element
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -28,24 +30,31 @@
     // get values
     const email = form.email.value;
     const password = form.password.value;
-
+ // try to login
     try {
+      // send the email and password to the server
       const res = await fetch('/login', { 
         method: 'POST', 
+        // send the data as a json
         body: JSON.stringify({ email, password }),
+        // set the content type header, so that we understand what type of data is sent to the server
         headers: {'Content-Type': 'application/json'}
       });
+      // check the response status
       const data = await res.json();
       console.log(data);
       if (data.errors) {
+        // display errors
         emailError.textContent = data.errors.email;
         passwordError.textContent = data.errors.password;
       }
+      // if login is successful, redirect user to home page
       if (data.user) {
         location.assign('/');
       }
 
     }
+    // catch error
     catch (err) {
       console.log(err);
     }

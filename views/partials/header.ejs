@@ -5,6 +5,11 @@
   <link rel="stylesheet" href="/styles.css">
   <style>
     /* Styles for the Profile Icon */
+
+    a:hover {
+      color: #536ae9;
+    }
+  
     #welcome{
     margin: 0;
     font-size: 20px;
@@ -12,6 +17,7 @@
   font-family: 'Geologica',Arial, Helvetica, sans-serif;
   color: #000000;
     }
+
 .profile-icon {
   cursor: pointer;
  
@@ -119,7 +125,7 @@
   </nav>
   
   <script>
-
+// Toggle the navbar on and off when clicking the profile icon
 function toggleNavbar() {
     var navbar = document.getElementById("navbar");
     if (navbar.style.display === "none" || navbar.style.display === "") {

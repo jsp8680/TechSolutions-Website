@@ -76,4 +76,9 @@ You can also access booked appointments, logout and  access your profile with th
 
 If you attempt to access any of the routes that are dependent on you being logged in you will be redirected to the login page.
 
+There is a app.test.js file that test some of the routes.
+Had trouble creating some tests before submitting the project and ran out of time so I just left the one I did do.
 
+I used jest to test the routes.
+I installed it as a dev dependency npm i jest --save-dev
+as well as super-test npm i supertest --save-dev

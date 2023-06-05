@@ -31,9 +31,9 @@
       cursor: pointer;
     }
     #goBack {
-  text-align: left;
-  float: left;
-}
+      text-align: left;
+      float: left;
+    }
     input[type="submit"]:hover {
       background-color: #73787e;
     }
@@ -41,45 +41,51 @@
       color: red;
       margin-bottom: 20px;
     }
-     #else-header{
+    #else-header {
       text-align: center;
       font-size: 35px;
       color: #242a30;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       font-weight: bold;
     }
-     
-#time, #serviceType{
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
 
-}
-#goBack {
-    position: absolute;
-    top: 100px;
-    left: 10px;
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    background: none;
-    border: none;
-    color: #536ae9;
-    cursor: pointer;
-  }
+    #time,
+    #serviceType {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    #goBack {
+      position: absolute;
+      top: 100px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      background: none;
+      border: none;
+      color: #536ae9;
+      cursor: pointer;
+    }
 
-  #goBack svg {
-    margin-right: 4px;
-  }
+    #goBack svg {
+      margin-right: 4px;
+    }
   </style>
 </head>
 
 <% if(user) {%>
 <body>
   <button id="goBack" onclick="goBack()">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#000000" width="24px" height="24px">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="#000000"
+      width="24px"
+      height="24px"
+    >
       <path d="M0 0h24v24H0z" fill="none" />
       <path d="M15.59 7.41L14.17 6l-6 6 6 6 1.41-1.41L10.58 12z" />
     </svg>
@@ -89,71 +95,83 @@
     <h1>Schedule an Appointment</h1>
     <p>Please fill in this form to schedule an appointment.</p>
 
-    
-    <input type="hidden" id="email" name="email" value="<%= user.email %>" readonly>
+    <input
+      type="hidden"
+      id="email"
+      name="email"
+      value="<%= user.email %>"
+      readonly
+    />
     <label for="date">Date:</label>
-    <input type="date" id="date" name="date" onclick="weekendMessage()" required>
+    <input
+      type="date"
+      id="date"
+      name="date"
+      onclick="weekendMessage()"
+      required
+    />
     <div class="date error"></div>
     <div class="weekend message"></div>
-    
+
     <label for="time">Time:</label>
-    <select  id="time" name="time" required>
+    <select id="time" name="time" required>
       <% timeValues.forEach(time => { %>
-        <option><%= time %></option>
+      <option><%= time %></option>
       <% }); %>
     </select>
     <div class="time error"></div>
     <div class="time message"></div>
-    
-    <label for="phone">Phone:</label>
-    <input type="text" id="phone" name="phone" required>
-    <div class="phone error"></div>
 
-   
+    <label for="phone">Phone:</label>
+    <input type="text" id="phone" name="phone" required />
+    <div class="phone error"></div>
 
     <label for="serviceType">Service Type</label>
     <select id="serviceType" name="serviceType" required>
-      <option value="Software Development Consultation">Software Development Consultation</option>
+      <option value="Software Development Consultation">
+        Software Development Consultation
+      </option>
       <option value="Network Installation">Network Installation</option>
       <option value="Troubleshooting">Troubleshooting</option>
       <option value="Other">Other</option>
     </select>
     <div class="serviceType error"></div>
-   
 
     <label for="description">Description:</label>
-    <textarea id="description" name="description" rows="3" cols='35' required></textarea>
+    <textarea
+      id="description"
+      name="description"
+      rows="3"
+      cols="35"
+      required
+    ></textarea>
     <div class="description error"></div>
-    
-    <input id="submit-schedule" type="submit" value="Submit">
+
+    <input id="submit-schedule" type="submit" value="Submit" />
   </form>
   <% } else { %>
-    <h1 id="else-header">Please Login or Sign Up to schedule an appointment</h1>
-    <br><br><br><br><br> <br><br><br><br>
-
+  <h1 id="else-header">Please Login or Sign Up to schedule an appointment</h1>
+  <br /><br /><br /><br /><br />
+  <br /><br /><br /><br />
 
   <% } %>
 </body>
 <script>
-   function goBack() {
+  // function to go back to previous page
+  function goBack() {
     window.history.back();
   }
-  function weekendMessage(){
+  // function to display weekend message
+  function weekendMessage() {
     // if date input is selected
     const dateInput = document.querySelector("#date");
     const weekendMessage = document.querySelector(".weekend.message");
 
-    weekendMessage.textContent = "You can only schedule an appointment on a weekday.";
+    weekendMessage.textContent =
+      "You can only schedule an appointment on a weekday.";
   }
 
-  // function timeMessage(){
-  //   // if date input is selected
-  //   const timeInput = document.querySelector("#time");
-  //   const timeMessage = document.querySelector(".time.message");
-
-  //   timeMessage.textContent = "You can only schedule an appointment on a weekday.";
-  // }
-
+  // Get the form element
   const form = document.querySelector("form");
   const dateError = document.querySelector(".date.error");
   const timeError = document.querySelector(".time.error");
@@ -162,53 +180,64 @@
   const descriptionError = document.querySelector(".description.error");
   const timeMessage = document.querySelector(".time.message");
 
- 
-  form.addEventListener('submit', async (e) =>{
-  e.preventDefault();
+  // Add an event listener to the form element
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  // Reset errors
-  dateError.textContent = "";
-  timeError.textContent = "";
-  phoneError.textContent = "";
-  serviceTypeError.textContent = "";
-  descriptionError.textContent = "";  
-  timeMessage.textContent = "";
+    // Reset errors
+    dateError.textContent = "";
+    timeError.textContent = "";
+    phoneError.textContent = "";
+    serviceTypeError.textContent = "";
+    descriptionError.textContent = "";
+    timeMessage.textContent = "";
 
-  // Get values
-  const email = form.email.value;
-  const date = form.date.value;
-  const time = form.time.value;
-  const phone = form.phone.value;
-  const serviceType = form.serviceType.value;
-  const description = form.description.value;
+    // Get values
+    const email = form.email.value;
+    const date = form.date.value;
+    const time = form.time.value;
+    const phone = form.phone.value;
+    const serviceType = form.serviceType.value;
+    const description = form.description.value;
 
-  try {
-    const res = await fetch('/schedule',{
-      method: "POST",
-      body: JSON.stringify({email, date, time, phone, serviceType, description}),
-      headers: {'Content-Type': 'application/json'}
-    });
+    // Add a try/catch statement
+    try {
+      const res = await fetch("/schedule", {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          date,
+          time,
+          phone,
+          serviceType,
+          description,
+        }),
+        headers: { "Content-Type": "application/json" },
+      });
 
-    const data = await res.json();
-    console.log(data);
-    if (data.errors) {
-      dateError.textContent = data.errors.date;
-      timeError.textContent = data.errors.time;
-      phoneError.textContent = data.errors.phone;
-      serviceTypeError.textContent = data.errors.serviceType;
-      descriptionError.textContent = data.errors.description;
-      timeMessage.textContent = data.errors.timeMessage;
+      // Check the response status
+      const data = await res.json();
+      console.log(data);
+      // Handle errors
+      if (data.errors) {
+        dateError.textContent = data.errors.date;
+        timeError.textContent = data.errors.time;
+        phoneError.textContent = data.errors.phone;
+        serviceTypeError.textContent = data.errors.serviceType;
+        descriptionError.textContent = data.errors.description;
+        timeMessage.textContent = data.errors.timeMessage;
+      }
+      // Redirect to appointments page if appointment is created
+      if (data.appointment) {
+        location.assign("/appointments");
+      }
+    } catch (err) {
+      console.log(err);
     }
-    if (data.appointment) { // Update the condition to check for data.appointment
-      location.assign("/appointments");
-    }
-  } catch (err) {
-    console.log(err);
-  }
-});
+  });
 
-// Event listener to clear weekend message
-  document.addEventListener('click', (event) => {
+  // Event listener to clear weekend message
+  document.addEventListener("click", (event) => {
     const dateInput = document.querySelector("#date");
     const weekendMessage = document.querySelector(".weekend.message");
 
@@ -217,7 +246,6 @@
       weekendMessage.textContent = "";
     }
   });
-
 </script>
 
 <%- include('partials/footer'); -%>
