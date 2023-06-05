@@ -2,7 +2,7 @@ const User = require("../models/User");
 const Appointment = require("../models/Appointment");
 const jwt = require('jsonwebtoken');
 const MongoClient = require('mongodb').MongoClient;
-const url = "mongodb+srv://censedpower8:coco1234@cluster1.hupl8dz.mongodb.net/";
+
 const sgMail = require('@sendgrid/mail')
 const API_KEY = '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'
 sgMail.setApiKey(API_KEY)

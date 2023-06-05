@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.set('view engine', 'ejs');
 
 // database connection
-const dbURI = 'mongodb+srv://censedpower8:coco1234@cluster1.hupl8dz.mongodb.net/';
+const dbURI = 'mongodb+srv://censedpower8:coco1234@cluster1.hupl8dz.mongodb.net/clients';
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => app.listen(3000),console.log('Server is running on port 3000 http://localhost:3000/'))
   .catch((err) => console.log(err));
@@ -31,3 +31,6 @@ app.get('/', (req, res) => res.render('home'));
 
 app.use(authRoutes);
 
+const createApp = () => app;
+
+module.exports = createApp;
