@@ -42,7 +42,7 @@ Following the previous steps above you must now initialize a new project using
 
 npm init or npm init -y
 
-Using npm init -y will install dependencies but will not work as the "Validator" dependencie requires the package-lock.json
+
 
 So in this case npm init should be the command used.
 

@@ -1,7 +1,7 @@
 {
   "name": "testingproject-lesson-18",
   "version": "1.0.0",
-  "description": "",
+  "description": "The TechSolutions Website is for a Project",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -20,5 +20,6 @@
     "mongoose": "^7.2.2",
     "session": "^0.1.0",
     "validator": "^13.9.0"
-  }
+  },
+  "keywords": []
 }
