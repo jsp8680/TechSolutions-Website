@@ -42,16 +42,13 @@ Following the previous steps above you must now initialize a new project using
 
 npm init or npm init -y
 
-
-
-So in this case npm init should be the command used.
+So in this case npm init -y should be the command used.
 
 Then you have to install the dependencies
 
 You can use this to install dependencies:
 
- npm install @sendgrid/mail bcrypt body-parser cookie-parser ejs 
-express jsonwebtoken mongodb mongoose session validator
+ npm install @sendgrid/mail bcrypt body-parser cookie-parser ejs express jsonwebtoken mongodb mongoose session validator
 
 Then you have to run the program with the following command:
 

@@ -1,6 +1,6 @@
 {
-  "name": "testingproject-lesson-18",
-  "version": "1.0.0",
+  "name": "tech_solutions",
+  "version": "1.3.2",
   "description": "The TechSolutions Website is for a Project",
   "main": "app.js",
   "scripts": {
