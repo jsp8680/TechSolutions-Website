@@ -46,6 +46,10 @@ nav li a{
   border-radius: 36px;
   background: #2aa8fc;
 }
+.btn:hover{
+  background: #3599f7;
+  color: white;
+}
 form h2{
   font-size: 2.4em;
   font-weight: 900;

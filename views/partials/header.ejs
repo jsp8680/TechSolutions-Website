@@ -1,138 +1,144 @@
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/styles.css">
-  <style>
-    /* Styles for the Profile Icon */
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
 
-    a:hover {
-      color: #536ae9;
-    }
-  
-    #welcome{
-    margin: 0;
-    font-size: 20px;
-  padding: 0;
-  font-family: 'Geologica',Arial, Helvetica, sans-serif;
-  color: #000000;
-    }
-
-.profile-icon {
-  cursor: pointer;
- 
-  width: 50px;
-  height: 50px;
- 
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-}
-/* Styles for the Navigation Bar */
-.navbar {
-  display: none;
-  align-items: center;
-  padding: 20px;
+.navbar-link:hover {
+  color: #008fee;
 }
 
-.dropdown {
-  position: relative;
-  display: inline-block;
+.profile-navbar:hover {
+  color: #008fee;
+}
+/* add hover effect on the id for the home-link */
+#home-link:hover {
+  color: #008fee;
 }
 
-.dropbtn {
-  cursor: pointer;
-  padding: 10px;
-  border-radius: 4px;
-  background-color: #536ae9;
-  color: #fff;
-}
+      #welcome {
+        margin: 0;
+        font-size: 20px;
+        padding: 0;
+        font-family: "Geologica", Arial, Helvetica, sans-serif;
+        color: #000000;
+      }
 
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-  top: 100%;
-  left: -60px;
-}
+      .profile-icon {
+        cursor: pointer;
 
+        width: 50px;
+        height: 50px;
 
-.dropdown-content a {
-  color: #000;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-  size: 20px;
-}
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+      }
+      /* Styles for the Navigation Bar */
+      .navbar {
+        display: none;
+        align-items: center;
+        padding: 20px;
+      }
 
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-.sign{
-  border-radius: 36px;
-  background: #008fee;
-  color: white;
-}
-.log{
-  border-radius: 36px;
-  background: #008fee;
-  color: white;
-}
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
 
-  </style>
-</head>
-<body>
-  <nav>
-    <h1><a href="/">TechSolutions</a></h1>
-    <ul>
-      <% if (user) { %>
+      .dropbtn {
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 4px;
+        background-color: #536ae9;
+        color: #fff;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        top: 100%;
+        left: -60px;
+      }
+
+      .dropdown-content a {
+        color: #000;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        size: 20px;
+      }
+
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+      .sign {
+        border-radius: 36px;
+        background: #008fee;
+        color: white;
+      }
+      .log {
+        border-radius: 36px;
+        background: #008fee;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <h1><a id="home-link" href="/">TechSolutions</a></h1>
+      <ul>
+        <% if (user) { %>
         <li id="welcome">Welcome, <%= user.firstname %></li>
-        <li><a href='/'>Home</a></li>
-        <li><a href='/schedule'>Book an Appointment</a></li>
-        <li><a href='/about'>About Us</a></li>
-        <li><a href='/services'>Services</a></li>
-        
+        <li><a class="navbar-link" href="/">Home</a></li>
+        <li><a class="navbar-link" href="/schedule">Book an Appointment</a></li>
+        <li><a class="navbar-link" href="/about">About Us</a></li>
+        <li><a class="navbar-link" href="/services">Services</a></li>
+
         <!-- Profile Icon -->
-<div class="profile-icon" onclick="toggleNavbar()">
-  <img src="profile-icon.jpg" alt="Profile Icon">
-</div>
+        <div class="profile-icon" onclick="toggleNavbar()">
+          <img src="profile-icon.jpg" alt="Profile Icon" />
+        </div>
 
-<div class="navbar" id="navbar">
-  <ul>
-    <li class="dropdown">
-      <a href="#" class="dropbtn">Menu</a>
-      <div class="dropdown-content">
-        <a href="/logout">Log Out</a>
-        <a href="/profile">Profile</a>
-        <a href="/appointments">Appointments</a>
-      </div>
-    </li>
-  </ul>
-</div>
+        <div class="navbar" id="navbar">
+          <ul>
+            <li class="dropdown">
+              <a href="#" class="dropbtn">Menu</a>
+              <div class="dropdown-content">
+                <a class="profile-navbar" href="/logout">Log Out</a>
+                <a  class="profile-navbar" href="/profile">Profile</a>
+                <a  class="profile-navbar" href="/appointments">Appointments</a>
+              </div>
+            </li>
+          </ul>
+        </div>
 
-      <% } else { %>
-        <li><a href='/'>Home</a></li>
-        <li><a href='/schedule'>Book an Appointment</a></li>
-        <li><a href='/about'>About Us</a></li>
-        <li><a href='/services'>Services</a></li>
+        <% } else { %>
+        <li><a href="/">Home</a></li>
+        <li><a href="/schedule">Book an Appointment</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/services">Services</a></li>
         <li><a href="/login" class="log">Log in</a></li>
         <li><a href="/signup" class="sign">Sign up</a></li>
-      <% } %>
-    </ul>
-  </nav>
-  
-  <script>
-// Toggle the navbar on and off when clicking the profile icon
-function toggleNavbar() {
-    var navbar = document.getElementById("navbar");
-    if (navbar.style.display === "none" || navbar.style.display === "") {
-      navbar.style.display = "block";
-    } else {
-      navbar.style.display = "none";
-    }
-  }
+        <% } %>
+      </ul>
+    </nav>
 
-  </script>
+    <script>
+      // Toggle the navbar on and off when clicking the profile icon
+      function toggleNavbar() {
+        var navbar = document.getElementById("navbar");
+        if (navbar.style.display === "none" || navbar.style.display === "") {
+          navbar.style.display = "block";
+        } else {
+          navbar.style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>
