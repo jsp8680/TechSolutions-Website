@@ -80,31 +80,29 @@ const handleErrorsForUsers = (err) => {
   console.log(err.message, err.code);
   let errors = { firstname: "", lastname: "", email: "", password: "" };
 
-
   // incorrect firstname (min)
-  if(err.message === "First name must be at least 2 characters long"){
+  if (err.message === "First name must be at least 2 characters long") {
     errors.firstname = "First name must be at least 2 characters long";
   }
   // incorrect lastname (min)
-  if(err.message === "Last name must be at least 2 characters long"){
+  if (err.message === "Last name must be at least 2 characters long") {
     errors.lastname = "Last name must be at least 2 characters long";
   }
-// incorrect firstname length (max)
-  if(err.message === "First name must be less than 30 characters long"){
+  // incorrect firstname length (max)
+  if (err.message === "First name must be less than 30 characters long") {
     errors.firstname = "First name must be less than 30 characters long";
-
   }
   // incorrect lastname length (max)
-  if(err.message === "Last name must be less than 30 characters long"){
+  if (err.message === "Last name must be less than 30 characters long") {
     errors.lastname = "Last name must be less than 30 characters long";
   }
 
-// if firstname is a number
-  if(err.message === "First name cannot contain a number"){
+  // if firstname is a number
+  if (err.message === "First name cannot contain a number") {
     errors.firstname = "First name cannot contain a number";
   }
   // if lastname is a number
-  if(err.message === "Last name cannot contain a number"){
+  if (err.message === "Last name cannot contain a number") {
     errors.lastname = "Last name cannot contain a number";
   }
 
@@ -218,27 +216,30 @@ module.exports.schedule_get = async (req, res) => {
 // post request for signup
 module.exports.signup_post = async (req, res) => {
   const { firstname, lastname, email, password } = req.body;
-  if(firstname.length < 2){
+  // if firstname is less than 2 characters
+  if (firstname.length < 2) {
     const errors = handleErrorsForUsers({
       message: "First name must be at least 2 characters long",
     });
     res.status(400).json({ errors });
     return;
-  } else if(firstname.length > 30){
+  } // if firstname is greater than 30 characters
+  else if (firstname.length > 30) {
     const errors = handleErrorsForUsers({
       message: "First name must be less than 30 characters long",
     });
     res.status(400).json({ errors });
     return;
   }
-
-  if(lastname.length < 2){
+// if lastname is less than 2 characters
+  if (lastname.length < 2) {
     const errors = handleErrorsForUsers({
       message: "Last name must be at least 2 characters long",
     });
     res.status(400).json({ errors });
     return;
-  } else if(lastname.length > 30){
+  }// if lastname is greater than 30 characters
+   else if (lastname.length > 30) {
     const errors = handleErrorsForUsers({
       message: "Last name must be less than 30 characters long",
     });
@@ -246,23 +247,23 @@ module.exports.signup_post = async (req, res) => {
     return;
   }
 
-// check if firstname contains a number
-if (/\d/.test(firstname)) {
-  const errors = handleErrorsForUsers({
-    message: "First name cannot contain a number",
-  });
-  res.status(400).json({ errors });
-  return;
-}
+  // check if firstname contains a number
+  if (/\d/.test(firstname)) {
+    const errors = handleErrorsForUsers({
+      message: "First name cannot contain a number",
+    });
+    res.status(400).json({ errors });
+    return;
+  }
 
-// check if lastname contains a number
-if (/\d/.test(lastname)) {
-  const errors = handleErrorsForUsers({
-    message: "Last name cannot contain a number",
-  });
-  res.status(400).json({ errors });
-  return;
-}
+  // check if lastname contains a number
+  if (/\d/.test(lastname)) {
+    const errors = handleErrorsForUsers({
+      message: "Last name cannot contain a number",
+    });
+    res.status(400).json({ errors });
+    return;
+  }
 
   try {
     // create a new user
